@@ -1,0 +1,24 @@
+namespaces:
+- author:
+  - Ryan Ly
+  - Oliver Ruebel
+  - Pam Baker
+  - Lydia Ng
+  contact:
+  - rly@lbl.gov
+  doc: An NWB extension to describe the detailed genotype of an experimental subject
+  name: ndx-genotype
+  schema:
+  - namespace: core
+    neurodata_types:
+    - ElectricalSeries
+    - TimeSeries
+    - NWBDataInterface
+    - NWBContainer
+  - namespace: hdmf-common
+    neurodata_types:
+    - DynamicTableRegion
+    - VectorData
+    - Data
+  - source: ndx-genotype.extensions.yaml
+  version: 0.1.0
