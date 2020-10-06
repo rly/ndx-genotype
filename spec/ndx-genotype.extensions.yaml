@@ -1,8 +1,143 @@
+datasets:
+- neurodata_type_def: CRIDVectorData
+  neurodata_type_inc: VectorData
+  dtype:
+  - name: registry
+    dtype: text
+    doc: Name of the registry. Should be either "MGI", "NCBI", or "Ensembl"
+  - name: symbol
+    dtype: text
+    doc: Symbol (key) of the locus in the registry.
+  shape:
+  - null
+  doc: A table column to hold Central Registry ID (CRID) values.
 groups:
-- neurodata_type_def: TetrodeSeries
-  neurodata_type_inc: ElectricalSeries
-  doc: An extension of ElectricalSeries to include the tetrode ID for each time series.
+- neurodata_type_def: GenotypesTable
+  neurodata_type_inc: DynamicTable
+  doc: A table to hold structured genotype information.
   attributes:
-  - name: trode_id
-    dtype: int32
-    doc: The tetrode ID.
+  - name: process
+    dtype: text
+    doc: Description of the process or assay used to determine the genotype, e.g.,
+      PCR.
+    required: false
+  - name: process_url
+    dtype: text
+    doc: URL to online document that provides further details of the protocol used,
+      e.g., https://dx.doi.org/10.17504/protocols.io.yjifuke
+    required: false
+  - name: assembly
+    dtype: text
+    doc: Description of the assembly of the reference genome, e.g., GRCm38.p6.
+    required: false
+  - name: annotation
+    dtype: text
+    doc: Description of the annotation of the reference genome, e.g., NCBI Mus musculus
+      Annotation Release 108.
+    required: false
+  datasets:
+  - name: locus_symbol
+    neurodata_type_inc: VectorData
+    dtype: text
+    doc: Symbol/name of the locus, e.g., Rorb.
+  - name: locus_type
+    neurodata_type_inc: VectorData
+    dtype: text
+    doc: Type of the locus, e.g., Gene, Transgene, Unclassified other.
+    quantity: '?'
+  - name: locus_crid
+    neurodata_type_inc: CRIDVectorData
+    doc: 'Central Registry ID (CRID) of the locus, e.g., MGI 1343464 => registry:
+      MGI, symbol: 1343464. Multiple CRIDs can be associated with each locus. At least
+      one must be provided.'
+  - name: locus_crid_index
+    neurodata_type_inc: VectorIndex
+    doc: Index for the locus_crid dataset
+  - name: allele1_symbol
+    neurodata_type_inc: VectorData
+    dtype: text
+    doc: Symbol/name of the first allele, e.g., Rorb-IRES2-Cre. "wt" should be used
+      to represent wild-type.
+  - name: allele1_type
+    neurodata_type_inc: VectorData
+    dtype: text
+    doc: 'Type of the first allele, e.g., Targeted (Recombinase), Transgenic (Null/knockout,
+      Transactivator), Targeted (Conditional ready, Inducible, Reporter)."Wild Type"
+      should be used to represent wild-type. Allele types can be found at: http://www.informatics.jax.org/userhelp/ALLELE_phenotypic_categories_help.shtml#method'
+    quantity: '?'
+  - name: allele1_crid
+    neurodata_type_inc: CRIDVectorData
+    doc: 'Central Registry ID (CRID) of the first allele, e.g., MGI 1343464 => registry:
+      MGI, symbol: 1343464. Multiple CRIDs can be associated with each allele.'
+    quantity: '?'
+  - name: allele1_crid_index
+    neurodata_type_inc: VectorIndex
+    doc: Index for the allele1_crid dataset
+    quantity: '?'
+  - name: allele2_symbol
+    neurodata_type_inc: VectorData
+    dtype: text
+    doc: Smybol/name of the second allele, e.g., Rorb-IRES2-Cre. "wt" should be used
+      to represent wild-type.
+  - name: allele2_type
+    neurodata_type_inc: VectorData
+    dtype: text
+    doc: 'Type of the second allele, e.g., Targeted (Recombinase), Transgenic (Null/knockout,
+      Transactivator), Targeted (Conditional ready, Inducible, Reporter)."Wild Type"
+      should be used to represent wild-type. Allele types can be found at: http://www.informatics.jax.org/userhelp/ALLELE_phenotypic_categories_help.shtml#method'
+    quantity: '?'
+  - name: allele2_crid
+    neurodata_type_inc: CRIDVectorData
+    doc: 'Central Registry ID (CRID) of the second allele, e.g., MGI 1343464 => registry:
+      MGI, symbol: 1343464. Multiple CRIDs can be associated with each allele.'
+    quantity: '?'
+  - name: allele2_crid_index
+    neurodata_type_inc: VectorIndex
+    doc: Index for the allele2_crid dataset
+    quantity: '?'
+  - name: allele3_symbol
+    neurodata_type_inc: VectorData
+    dtype: text
+    doc: Symbol/name of the third allele, e.g., Rorb-IRES2-Cre. "wt" should be used
+      to represent wild-type.
+    quantity: '?'
+  - name: allele3_type
+    neurodata_type_inc: VectorData
+    dtype: text
+    doc: 'Type of the third allele, e.g., Targeted (Recombinase), Transgenic (Null/knockout,
+      Transactivator), Targeted (Conditional ready, Inducible, Reporter)."Wild Type"
+      should be used to represent wild-type. Allele types can be found at: http://www.informatics.jax.org/userhelp/ALLELE_phenotypic_categories_help.shtml#method'
+    quantity: '?'
+  - name: allele3_crid
+    neurodata_type_inc: CRIDVectorData
+    doc: 'Central Registry ID (CRID) of the third allele, e.g., MGI 1343464 => registry:
+      MGI, symbol: 1343464. Multiple CRIDs can be associated with each allele.'
+    quantity: '?'
+  - name: allele3_crid_index
+    neurodata_type_inc: VectorIndex
+    doc: Index for the allele3_crid dataset
+    quantity: '?'
+- neurodata_type_def: GenotypeSubject
+  neurodata_type_inc: Subject
+  doc: 'An enhanced Subject type that has an additional field for a genotype table.
+    NOTE: If this proposal for extension to NWB gets merged with the core schema,
+    then this type would be removed and theSubject specification updated instead.'
+  groups:
+  - name: genotypes_table
+    neurodata_type_inc: GenotypeTable
+    doc: Structured genotype information for the subject.
+    quantity: '?'
+- neurodata_type_def: GenotypeNWBFile
+  neurodata_type_inc: NWBFile
+  doc: 'Extension of the NWBFile class to allow placing the new GenotypeSubject type
+    in /general/subject in the NWBFile. NOTE: If this proposal for extension to NWB
+    gets merged with the core schema, then this type would be removed and the NWBFile
+    specification updated instead.'
+  groups:
+  - name: general
+    doc: Expanded definition of general from NWBFile.
+    groups:
+    - name: subject
+      neurodata_type_inc: GenotypeSubject
+      doc: Subject information with structured genotype information.
+      quantity: '?'

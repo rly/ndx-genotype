@@ -11,14 +11,12 @@ namespaces:
   schema:
   - namespace: core
     neurodata_types:
-    - ElectricalSeries
-    - TimeSeries
-    - NWBDataInterface
+    - Subject
+    - NWBFile
     - NWBContainer
-  - namespace: hdmf-common
-    neurodata_types:
-    - DynamicTableRegion
+    - DynamicTable
     - VectorData
     - Data
+    - Container
   - source: ndx-genotype.extensions.yaml
   version: 0.1.0
