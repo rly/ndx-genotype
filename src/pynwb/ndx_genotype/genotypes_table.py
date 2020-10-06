@@ -71,8 +71,8 @@ class CRID(NWBContainer):
 
     @docval({'name': 'registry',
              'type': str,
-             'doc': 'Name of the registry. Should be either "MGI", "NCBI", or "Ensembl".',
-             'enum': ['MGI', 'NCBI', 'Ensembl']},
+             'doc': 'Name of the registry. Should be either "MGI", "NCBI Gene", or "Ensembl".',
+             'enum': ['MGI', 'NCBI Gene', 'Ensembl']},
             {'name': 'symbol',
              'type': str,
              'doc': 'Symbol (key) of the locus in the registry.'})
@@ -278,9 +278,9 @@ class GenotypesTable(DynamicTable):
         for crid in arr:
             if len(crid) != 2:
                 return 'must be an array/list/tuple with tuples of length 2.'
-            if crid[0] not in ('MGI', 'NCBI', 'Ensembl'):
+            if crid[0] not in ('MGI', 'NCBI Gene', 'Ensembl'):
                 return ('must be an array/list/tuple with tuples where the first element (registry) '
-                        'is one of: "MGI", "NCBI", or "Ensembl".')
+                        'is one of: "MGI", "NCBI Gene", or "Ensembl".')
             if not isinstance(crid[1], str):
                 return 'must be an array/list/tuple with tuples where the second element (symbol) is a string.'
         return None

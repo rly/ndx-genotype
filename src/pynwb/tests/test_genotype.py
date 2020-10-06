@@ -49,7 +49,7 @@ class TestGenotypesTableConstructor(TestCase):
         )
         gt.add_genotype(
             locus_symbol='Rorb',
-            locus_crid=[('MGI', '1343464'), ('NCBI', '225998')],
+            locus_crid=[('MGI', '1343464'), ('NCBI Gene', '225998')],
             allele1_symbol='Rorb-IRES2-Cre',
             allele1_crid=[('MGI', '5507855')],
             allele2_symbol='wt',
@@ -58,7 +58,7 @@ class TestGenotypesTableConstructor(TestCase):
             locus_symbol='locus_symbol',
             locus_crid=[('MGI', '1')],
             allele1_symbol='Rorb-allele1_symbol-Cre',
-            allele1_crid=[('MGI', '2'), ('NCBI', '3')],
+            allele1_crid=[('MGI', '2'), ('NCBI Gene', '3')],
             allele2_symbol='allele2_symbol',
         )
 
@@ -72,7 +72,7 @@ class TestGenotypesTableConstructor(TestCase):
         gt.add_genotype(
             locus_symbol='Rorb2',
             locus_type='Gene',
-            locus_crid=[('MGI', '1343464'), ('NCBI', '225998')],
+            locus_crid=[('MGI', '1343464'), ('NCBI Gene', '225998')],
             allele1_symbol='Rorb-IRES2-Cre',
             allele2_symbol='wt',
             allele1_type='Targeted (Recombinase)',
@@ -92,10 +92,10 @@ class TestGenotypesTableConstructor(TestCase):
             allele1_type='allele1_type',
             allele1_crid=[('MGI', '3')],
             allele2_type='allele2_type',
-            allele2_crid=[('MGI', '4'), ('NCBI', '5')],
+            allele2_crid=[('MGI', '4'), ('NCBI Gene', '5')],
             allele3_symbol='allele3_symbol',
             allele3_type='allele3_type',
-            allele3_crid=[('MGI', '6'), ('NCBI', '7'), ('Ensembl', '8')],
+            allele3_crid=[('MGI', '6'), ('NCBI Gene', '7'), ('Ensembl', '8')],
         )
 
     def test_constructor_bad_crid(self):
@@ -112,7 +112,7 @@ class TestGenotypesTableConstructor(TestCase):
             )
 
         msg = ('locus_crid must be an array/list/tuple with tuples where the first element (registry) '
-               'is one of: "MGI", "NCBI", or "Ensembl".')
+               'is one of: "MGI", "NCBI Gene", or "Ensembl".')
         with self.assertRaisesWith(ValueError, msg):
             gt.add_genotype(
                 locus_symbol='Rorb',
@@ -202,7 +202,7 @@ class TestGenotypesTableRoundtrip(TestCase):
         )
         gt.add_genotype(
             locus_symbol='Rorb',
-            locus_crid=[('MGI', '1343464'), ('NCBI', '225998')],
+            locus_crid=[('MGI', '1343464'), ('NCBI Gene', '225998')],
             allele1_symbol='Rorb-IRES2-Cre',
             allele1_crid=[('MGI', '5507855')],
             allele2_symbol='wt',
@@ -211,7 +211,7 @@ class TestGenotypesTableRoundtrip(TestCase):
             locus_symbol='locus_symbol',
             locus_crid=[('MGI', '1')],
             allele1_symbol='Rorb-allele1_symbol-Cre',
-            allele1_crid=[('MGI', '2'), ('NCBI', '3')],
+            allele1_crid=[('MGI', '2'), ('NCBI Gene', '3')],
             allele2_symbol='allele2_symbol',
         )
         self.roundtrip(gt)
@@ -226,7 +226,7 @@ class TestGenotypesTableRoundtrip(TestCase):
         gt.add_genotype(
             locus_symbol='Rorb2',
             locus_type='Gene',
-            locus_crid=[('MGI', '1343464'), ('NCBI', '225998')],
+            locus_crid=[('MGI', '1343464'), ('NCBI Gene', '225998')],
             allele1_symbol='Rorb-IRES2-Cre',
             allele2_symbol='wt',
             allele1_type='Targeted (Recombinase)',
@@ -246,10 +246,10 @@ class TestGenotypesTableRoundtrip(TestCase):
             allele1_type='allele1_type',
             allele1_crid=[('MGI', '3')],
             allele2_type='allele2_type',
-            allele2_crid=[('MGI', '4'), ('NCBI', '5')],
+            allele2_crid=[('MGI', '4'), ('NCBI Gene', '5')],
             allele3_symbol='allele3_symbol',
             allele3_type='allele3_type',
-            allele3_crid=[('MGI', '6'), ('NCBI', '7'), ('Ensembl', '8')],
+            allele3_crid=[('MGI', '6'), ('NCBI Gene', '7'), ('Ensembl', '8')],
         )
         self.roundtrip(gt)
 
