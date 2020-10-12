@@ -239,12 +239,12 @@ def main():
                 doc='Information about ontological terms used in this file.',
                 quantity='?',
                 datasets=[
-                    NWBGroupSpec(
+                    NWBDatasetSpec(
                         name='objects',
                         neurodata_type_inc='OntologyTable',
                         doc='The objects that conform to an ontology.',
                     ),
-                    NWBGroupSpec(
+                    NWBDatasetSpec(
                         name='terms',
                         neurodata_type_inc='OntologyMap',
                         doc='The ontological terms that get used in this file.',
@@ -298,7 +298,7 @@ def main():
                 doc='The user key that maps to the ontology term / registry symbol.'
             ),
             NWBDtypeSpec(
-                name='field',
+                name='ontology',
                 dtype='text',
                 doc='The ontology/registry that the term/symbol comes from.'
             ),

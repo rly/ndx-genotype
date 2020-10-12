@@ -24,4 +24,4 @@ load_namespaces(ndx_genotype_specpath)
 
 from . import io as __io  # noqa: F401,E402
 from .genotypes_table import GenotypesTable  # noqa: F401,E402
-from .genotypes_file import GenotypeNWBFile, GenotypeSubject  # noqa: F401,E402
+from .genotypes_file import GenotypeNWBFile, GenotypeSubject, OntologyTable, OntologyMap  # noqa: F401,E402

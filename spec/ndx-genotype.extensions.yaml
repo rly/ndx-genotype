@@ -11,6 +11,39 @@ datasets:
   shape:
   - null
   doc: A table column to hold Central Registry ID (CRID) values.
+- neurodata_type_def: OntologyTable
+  dtype:
+  - name: id
+    dtype: uint64
+    doc: The unique identifier in this table.
+  - name: object_id
+    dtype: text
+    doc: The UUID for the object that uses this ontology term.
+  - name: field
+    dtype: text
+    doc: The field from the object (specified by object_id) that uses this ontological
+      term.
+  - name: item
+    dtype: uint64
+    doc: An index into the OntologyMap that contains the term.
+  doc: A table for identifying which objects in a file contain values that correspond
+    to ontology terms or centrally registered IDs (CRIDs)
+- neurodata_type_def: OntologyMap
+  dtype:
+  - name: id
+    dtype: uint64
+    doc: The unique identifier in this table.
+  - name: key
+    dtype: text
+    doc: The user key that maps to the ontology term / registry symbol.
+  - name: ontology
+    dtype: text
+    doc: The ontology/registry that the term/symbol comes from.
+  - name: uri
+    dtype: text
+    doc: The unique resource identifier for the ontology term / registry symbol.
+  doc: A table for mapping user terms (i.e., keys) to ontology terms / registry symbols
+    / centrally registered IDs (CRIDs)
 groups:
 - neurodata_type_def: GenotypesTable
   neurodata_type_inc: DynamicTable
@@ -129,10 +162,12 @@ groups:
     quantity: '?'
 - neurodata_type_def: GenotypeNWBFile
   neurodata_type_inc: NWBFile
-  doc: 'Extension of the NWBFile class to allow placing the new GenotypeSubject type
-    in /general/subject in the NWBFile. NOTE: If this proposal for extension to NWB
-    gets merged with the core schema, then this type would be removed and the NWBFile
-    specification updated instead.'
+  doc: 'Extension of the NWBFile class to allow 1) placing the new GenotypeSubject
+    type in /general/subject in the NWBFile and 2) placing the new ontologies group
+    containing an ontology table and ontology map. NOTE: If this proposal for extension
+    to NWB gets merged with the core schema, then this type would be removed and the
+    NWBFile specification updated instead. The ontologies types will be incorporated
+    from HDMF when they are finalized.'
   groups:
   - name: general
     doc: Expanded definition of general from NWBFile.
@@ -141,3 +176,13 @@ groups:
       neurodata_type_inc: GenotypeSubject
       doc: Subject information with structured genotype information.
       quantity: '?'
+  - name: .ontologies
+    doc: Information about ontological terms used in this file.
+    quantity: '?'
+    datasets:
+    - name: objects
+      neurodata_type_inc: OntologyTable
+      doc: The objects that conform to an ontology.
+    - name: terms
+      neurodata_type_inc: OntologyMap
+      doc: The ontological terms that get used in this file.

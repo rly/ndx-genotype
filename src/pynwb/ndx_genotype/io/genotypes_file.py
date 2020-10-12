@@ -1,6 +1,6 @@
 from pynwb import register_map
 from pynwb.file import NWBFile
-from pynwb.io import NWBFileMap
+from pynwb.io.file import NWBFileMap
 
 
 @register_map(NWBFile)
