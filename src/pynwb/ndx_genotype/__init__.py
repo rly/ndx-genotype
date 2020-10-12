@@ -1,5 +1,5 @@
 import os
-from pynwb import load_namespaces, get_class
+from pynwb import load_namespaces
 
 
 # Set path of the namespace.yaml file to the expected install location
@@ -22,6 +22,6 @@ if not os.path.exists(ndx_genotype_specpath):
 # Load the namespace
 load_namespaces(ndx_genotype_specpath)
 
-CRIDVectorData = get_class('CRIDVectorData', 'ndx-genotype')
-
-from .genotypes_table import GenotypeNWBFile, GenotypeSubject, GenotypesTable  # noqa: F401,E402
+from . import io as __io  # noqa: F401,E402
+from .genotypes_table import GenotypesTable  # noqa: F401,E402
+from .genotypes_file import GenotypeNWBFile, GenotypeSubject  # noqa: F401,E402

@@ -202,35 +202,116 @@ def main():
              'NOTE: If this proposal for extension '
              'to NWB gets merged with the core schema, then this type would be removed and the'
              'Subject specification updated instead.'),
-        groups=[NWBGroupSpec(
-            name='genotypes_table',
-            neurodata_type_inc='GenotypeTable',
-            doc='Structured genotype information for the subject.',
-            quantity='?',
-        )],
+        groups=[
+            NWBGroupSpec(
+                name='genotypes_table',
+                neurodata_type_inc='GenotypeTable',
+                doc='Structured genotype information for the subject.',
+                quantity='?',
+            ),
+        ],
     )
 
     genotype_nwbfile_spec = NWBGroupSpec(
         neurodata_type_def='GenotypeNWBFile',
         neurodata_type_inc='NWBFile',
-        doc=('Extension of the NWBFile class to allow placing the new GenotypeSubject type '
-             'in /general/subject in the NWBFile. NOTE: If this proposal for extension '
+        doc=('Extension of the NWBFile class to allow 1) placing the new GenotypeSubject type '
+             'in /general/subject in the NWBFile and 2) placing the new ontologies group containing an '
+             'ontology table and ontology map. NOTE: If this proposal for extension '
              'to NWB gets merged with the core schema, then this type would be removed and the '
-             'NWBFile specification updated instead.'),
-        groups=[NWBGroupSpec(
-            name='general',  # override existing general group
-            doc='Expanded definition of general from NWBFile.',
-            groups=[NWBGroupSpec(
-                name='subject',  # override existing subject type
-                neurodata_type_inc='GenotypeSubject',
-                doc='Subject information with structured genotype information.',
+             'NWBFile specification updated instead. The ontologies types will be incorporated from HDMF '
+             'when they are finalized.'),
+        groups=[
+            NWBGroupSpec(
+                name='general',  # override existing general group
+                doc='Expanded definition of general from NWBFile.',
+                groups=[
+                    NWBGroupSpec(
+                        name='subject',  # override existing subject type
+                        neurodata_type_inc='GenotypeSubject',
+                        doc='Subject information with structured genotype information.',
+                        quantity='?',
+                    ),
+                ],
+            ),
+            NWBGroupSpec(
+                name='.ontologies',
+                doc='Information about ontological terms used in this file.',
                 quantity='?',
-            )],
-        )],
+                datasets=[
+                    NWBGroupSpec(
+                        name='objects',
+                        neurodata_type_inc='OntologyTable',
+                        doc='The objects that conform to an ontology.',
+                    ),
+                    NWBGroupSpec(
+                        name='terms',
+                        neurodata_type_inc='OntologyMap',
+                        doc='The ontological terms that get used in this file.',
+                    ),
+                ],
+            ),
+        ],
     )
 
-    # TODO: add all of your new data types to this list
-    new_data_types = [crid_vectordata_spec, genotypes_table_spec, genotype_subject_spec, genotype_nwbfile_spec]
+    ontology_table_spec = NWBDatasetSpec(
+        neurodata_type_def='OntologyTable',
+        doc=('A table for identifying which objects in a file contain values that correspond to ontology terms or '
+             'centrally registered IDs (CRIDs)'),
+        dtype=[
+            NWBDtypeSpec(
+                name='id',
+                dtype='uint64',
+                doc='The unique identifier in this table.'
+            ),
+            NWBDtypeSpec(
+                name='object_id',
+                dtype='text',
+                doc='The UUID for the object that uses this ontology term.'
+            ),
+            NWBDtypeSpec(
+                name='field',
+                dtype='text',
+                doc='The field from the object (specified by object_id) that uses this ontological term.'
+            ),
+            NWBDtypeSpec(
+                name='item',
+                dtype='uint64',
+                doc='An index into the OntologyMap that contains the term.'
+            ),
+        ],
+    )
+
+    ontology_map_spec = NWBDatasetSpec(
+        neurodata_type_def='OntologyMap',
+        doc=('A table for mapping user terms (i.e., keys) to ontology terms / registry symbols / '
+             'centrally registered IDs (CRIDs)'),
+        dtype=[
+            NWBDtypeSpec(
+                name='id',
+                dtype='uint64',
+                doc='The unique identifier in this table.'
+            ),
+            NWBDtypeSpec(
+                name='key',
+                dtype='text',
+                doc='The user key that maps to the ontology term / registry symbol.'
+            ),
+            NWBDtypeSpec(
+                name='field',
+                dtype='text',
+                doc='The ontology/registry that the term/symbol comes from.'
+            ),
+            NWBDtypeSpec(
+                name='uri',
+                dtype='text',
+                doc='The unique resource identifier for the ontology term / registry symbol.'
+            ),
+        ],
+    )
+
+    new_data_types = [crid_vectordata_spec, genotypes_table_spec, genotype_subject_spec, genotype_nwbfile_spec,
+                      ontology_table_spec, ontology_map_spec]
 
     # export the spec to yaml files in the spec folder
     output_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'spec'))
