@@ -25,25 +25,6 @@ def main():
     ns_builder.include_type('Data', namespace='core')
     ns_builder.include_type('Container', namespace='core')
 
-    crid_vectordata_spec = NWBDatasetSpec(
-        neurodata_type_def='CRIDVectorData',
-        neurodata_type_inc='VectorData',
-        doc='A table column to hold Central Registry ID (CRID) values.',
-        dtype=[
-            NWBDtypeSpec(
-                name='registry',
-                doc='Name of the registry. Should be either "MGI", "NCBI", or "Ensembl"',
-                dtype='text',
-            ),
-            NWBDtypeSpec(
-                name='symbol',
-                doc='Symbol (key) of the locus in the registry.',
-                dtype='text',
-            )
-        ],
-        shape=[None],
-    )
-
     genotypes_table_spec = NWBGroupSpec(
         neurodata_type_def='GenotypesTable',
         neurodata_type_inc='DynamicTable',
@@ -91,17 +72,6 @@ def main():
                 quantity='?',
             ),
             NWBDatasetSpec(
-                name='locus_crid',
-                neurodata_type_inc='CRIDVectorData',
-                doc=('Central Registry ID (CRID) of the locus, e.g., MGI 1343464 => registry: MGI, symbol: 1343464. '
-                     'Multiple CRIDs can be associated with each locus. At least one must be provided.'),
-            ),
-            NWBDatasetSpec(
-                name='locus_crid_index',
-                neurodata_type_inc='VectorIndex',
-                doc='Index for the locus_crid dataset',
-            ),
-            NWBDatasetSpec(
                 name='allele1_symbol',
                 neurodata_type_inc='VectorData',
                 doc=('Symbol/name of the first allele, e.g., Rorb-IRES2-Cre. '
@@ -116,19 +86,6 @@ def main():
                      '"Wild Type" should be used to represent wild-type. Allele types can be found at: '
                      'http://www.informatics.jax.org/userhelp/ALLELE_phenotypic_categories_help.shtml#method'),
                 dtype='text',
-                quantity='?',
-            ),
-            NWBDatasetSpec(
-                name='allele1_crid',
-                neurodata_type_inc='CRIDVectorData',
-                doc=('Central Registry ID (CRID) of the first allele, e.g., MGI 1343464 => registry: MGI, '
-                     'symbol: 1343464. Multiple CRIDs can be associated with each allele.'),
-                quantity='?',
-            ),
-            NWBDatasetSpec(
-                name='allele1_crid_index',
-                neurodata_type_inc='VectorIndex',
-                doc='Index for the allele1_crid dataset',
                 quantity='?',
             ),
             NWBDatasetSpec(
@@ -149,19 +106,6 @@ def main():
                 quantity='?',
             ),
             NWBDatasetSpec(
-                name='allele2_crid',
-                neurodata_type_inc='CRIDVectorData',
-                doc=('Central Registry ID (CRID) of the second allele, e.g., MGI 1343464 => registry: MGI, '
-                     'symbol: 1343464. Multiple CRIDs can be associated with each allele.'),
-                quantity='?',
-            ),
-            NWBDatasetSpec(
-                name='allele2_crid_index',
-                neurodata_type_inc='VectorIndex',
-                doc='Index for the allele2_crid dataset',
-                quantity='?',
-            ),
-            NWBDatasetSpec(
                 name='allele3_symbol',
                 neurodata_type_inc='VectorData',
                 doc=('Symbol/name of the third allele, e.g., Rorb-IRES2-Cre. '
@@ -177,19 +121,6 @@ def main():
                      '"Wild Type" should be used to represent wild-type. Allele types can be found at: '
                      'http://www.informatics.jax.org/userhelp/ALLELE_phenotypic_categories_help.shtml#method'),
                 dtype='text',
-                quantity='?',
-            ),
-            NWBDatasetSpec(
-                name='allele3_crid',
-                neurodata_type_inc='CRIDVectorData',
-                doc=('Central Registry ID (CRID) of the third allele, e.g., MGI 1343464 => registry: MGI, '
-                     'symbol: 1343464. Multiple CRIDs can be associated with each allele.'),
-                quantity='?',
-            ),
-            NWBDatasetSpec(
-                name='allele3_crid_index',
-                neurodata_type_inc='VectorIndex',
-                doc='Index for the allele3_crid dataset',
                 quantity='?',
             ),
         ],
@@ -310,7 +241,7 @@ def main():
         ],
     )
 
-    new_data_types = [crid_vectordata_spec, genotypes_table_spec, genotype_subject_spec, genotype_nwbfile_spec,
+    new_data_types = [genotypes_table_spec, genotype_subject_spec, genotype_nwbfile_spec,
                       ontology_table_spec, ontology_map_spec]
 
     # export the spec to yaml files in the spec folder

@@ -1,16 +1,4 @@
 datasets:
-- neurodata_type_def: CRIDVectorData
-  neurodata_type_inc: VectorData
-  dtype:
-  - name: registry
-    dtype: text
-    doc: Name of the registry. Should be either "MGI", "NCBI", or "Ensembl"
-  - name: symbol
-    dtype: text
-    doc: Symbol (key) of the locus in the registry.
-  shape:
-  - null
-  doc: A table column to hold Central Registry ID (CRID) values.
 - neurodata_type_def: OntologyTable
   dtype:
   - name: id
@@ -78,14 +66,6 @@ groups:
     dtype: text
     doc: Type of the locus, e.g., Gene, Transgene, Unclassified other.
     quantity: '?'
-  - name: locus_crid
-    neurodata_type_inc: CRIDVectorData
-    doc: 'Central Registry ID (CRID) of the locus, e.g., MGI 1343464 => registry:
-      MGI, symbol: 1343464. Multiple CRIDs can be associated with each locus. At least
-      one must be provided.'
-  - name: locus_crid_index
-    neurodata_type_inc: VectorIndex
-    doc: Index for the locus_crid dataset
   - name: allele1_symbol
     neurodata_type_inc: VectorData
     dtype: text
@@ -97,15 +77,6 @@ groups:
     doc: 'Type of the first allele, e.g., Targeted (Recombinase), Transgenic (Null/knockout,
       Transactivator), Targeted (Conditional ready, Inducible, Reporter)."Wild Type"
       should be used to represent wild-type. Allele types can be found at: http://www.informatics.jax.org/userhelp/ALLELE_phenotypic_categories_help.shtml#method'
-    quantity: '?'
-  - name: allele1_crid
-    neurodata_type_inc: CRIDVectorData
-    doc: 'Central Registry ID (CRID) of the first allele, e.g., MGI 1343464 => registry:
-      MGI, symbol: 1343464. Multiple CRIDs can be associated with each allele.'
-    quantity: '?'
-  - name: allele1_crid_index
-    neurodata_type_inc: VectorIndex
-    doc: Index for the allele1_crid dataset
     quantity: '?'
   - name: allele2_symbol
     neurodata_type_inc: VectorData
@@ -119,15 +90,6 @@ groups:
       Transactivator), Targeted (Conditional ready, Inducible, Reporter)."Wild Type"
       should be used to represent wild-type. Allele types can be found at: http://www.informatics.jax.org/userhelp/ALLELE_phenotypic_categories_help.shtml#method'
     quantity: '?'
-  - name: allele2_crid
-    neurodata_type_inc: CRIDVectorData
-    doc: 'Central Registry ID (CRID) of the second allele, e.g., MGI 1343464 => registry:
-      MGI, symbol: 1343464. Multiple CRIDs can be associated with each allele.'
-    quantity: '?'
-  - name: allele2_crid_index
-    neurodata_type_inc: VectorIndex
-    doc: Index for the allele2_crid dataset
-    quantity: '?'
   - name: allele3_symbol
     neurodata_type_inc: VectorData
     dtype: text
@@ -140,15 +102,6 @@ groups:
     doc: 'Type of the third allele, e.g., Targeted (Recombinase), Transgenic (Null/knockout,
       Transactivator), Targeted (Conditional ready, Inducible, Reporter)."Wild Type"
       should be used to represent wild-type. Allele types can be found at: http://www.informatics.jax.org/userhelp/ALLELE_phenotypic_categories_help.shtml#method'
-    quantity: '?'
-  - name: allele3_crid
-    neurodata_type_inc: CRIDVectorData
-    doc: 'Central Registry ID (CRID) of the third allele, e.g., MGI 1343464 => registry:
-      MGI, symbol: 1343464. Multiple CRIDs can be associated with each allele.'
-    quantity: '?'
-  - name: allele3_crid_index
-    neurodata_type_inc: VectorIndex
-    doc: Index for the allele3_crid dataset
     quantity: '?'
 - neurodata_type_def: GenotypeSubject
   neurodata_type_inc: Subject
