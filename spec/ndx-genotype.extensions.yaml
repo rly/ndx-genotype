@@ -14,6 +14,8 @@ datasets:
   - name: item
     dtype: uint64
     doc: An index into the OntologyMap that contains the term.
+  shape:
+  - null
   doc: A table for identifying which objects in a file contain values that correspond
     to ontology terms or centrally registered IDs (CRIDs)
 - neurodata_type_def: OntologyMap
@@ -30,6 +32,8 @@ datasets:
   - name: uri
     dtype: text
     doc: The unique resource identifier for the ontology term / registry symbol.
+  shape:
+  - null
   doc: A table for mapping user terms (i.e., keys) to ontology terms / registry symbols
     / centrally registered IDs (CRIDs)
 groups:

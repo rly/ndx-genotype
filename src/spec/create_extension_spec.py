@@ -211,6 +211,7 @@ def main():
                 doc='An index into the OntologyMap that contains the term.'
             ),
         ],
+        shape=[None],
     )
 
     ontology_map_spec = NWBDatasetSpec(
@@ -239,6 +240,7 @@ def main():
                 doc='The unique resource identifier for the ontology term / registry symbol.'
             ),
         ],
+        shape=[None],
     )
 
     new_data_types = [genotypes_table_spec, genotype_subject_spec, genotype_nwbfile_spec,
