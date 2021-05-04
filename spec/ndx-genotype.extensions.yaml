@@ -84,7 +84,6 @@ groups:
     neurodata_type_inc: VectorData
     dtype: text
     doc: ...
-    quantity: '?'
   - name: generation_method
     neurodata_type_inc: VectorData
     dtype: text
