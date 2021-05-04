@@ -35,6 +35,7 @@ class TestGenotypesTable(TestCase):
         )
         gt = GenotypesTable(**kwargs)
         nwbfile.subject.genotypes_table = gt  # GenotypesTable must be descendant of NWBFile before add_genotype works
+        # TODO remove this dependency
         return gt
 
     def test_add_minimal(self):
