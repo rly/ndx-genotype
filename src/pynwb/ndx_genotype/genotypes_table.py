@@ -18,29 +18,20 @@ class GenotypesTable(DynamicTable):
     )
 
     __columns__ = (
-        {'name': 'locus_symbol',
+        {'name': 'locus',
          'description': 'Symbol/name of the locus.',
          'required': True},
-        {'name': 'allele1_symbol',
-         'description': 'Symbol/name of the first allele.',
+        {'name': 'allele1',
+         'description': '...',
+         'table': True,
          'required': True},
-        {'name': 'locus_type',
-         'description': 'Type of the locus, e.g., Gene, Transgene, Unclassified other.',
+        {'name': 'allele2',
+         'description': '...',
+         'table': True,
          'required': False},
-        {'name': 'allele1_type',
-         'description': 'Type of the first allele.',
-         'required': False},
-        {'name': 'allele2_symbol',
-         'description': 'Symbol/name of the second allele.',
-         'required': False},
-        {'name': 'allele2_type',
-         'description': 'Type of the second allele.',
-         'required': False},
-        {'name': 'allele3_symbol',
-         'description': 'Symbol/name of the third allele.',
-         'required': False},
-        {'name': 'allele3_type',
-         'description': 'Type of the third allele.',
+        {'name': 'allele3',
+         'description': '...',
+         'table': True,
          'required': False},
     )
 
@@ -78,109 +69,72 @@ class GenotypesTable(DynamicTable):
         self.assembly = getargs('assembly', kwargs)
         self.annotation = getargs('annotation', kwargs)
 
-    @docval({'name': 'locus_symbol',
-             'type': str,
-             'doc': 'Symbol/name of the locus, e.g., Rorb.'},
-            {'name': 'locus_crid',
-             'type': 'array_data',
-             'doc': ('Central Registry ID (CRID) of the locus, e.g., MGI 1343464 => registry: MGI, symbol: 1343464. '
-                     'Multiple CRIDs can be associated with each locus. At least one must be provided.'),
-             'shape': (None, 2),
-             },
-            {'name': 'allele1_symbol',
-             'type': str,
-             'doc': ('Symbol/name of the first allele, e.g., Rorb-IRES2-Cre. '
-                     '"wt" should be used to represent wild-type.')},
-            {'name': 'allele1_type',
-             'type': str,
-             'doc': ('Type of the first allele, e.g., Targeted (Recombinase), '
-                     'Transgenic (Null/knockout, Transactivator), Targeted (Conditional ready, Inducible, Reporter).'
-                     '"Wild Type" should be used to represent wild-type. Allele types can be found at: '
-                     'http://www.informatics.jax.org/userhelp/ALLELE_phenotypic_categories_help.shtml#method'),
-             'default': None},
-            {'name': 'allele1_crid',
-             'type': 'array_data',
-             'doc': ('Central Registry ID (CRID) of the first allele, e.g., MGI 1343464 => registry: MGI, '
-                     'symbol: 1343464. Multiple CRIDs can be associated with each allele.'),
-             'default': None},
-            {'name': 'allele2_symbol',
-             'type': str,
-             'doc': ('Symbol/name of the second allele, e.g., Rorb-IRES2-Cre. '
-                     '"wt" should be used to represent wild-type.'),
-             'default': None},
-            {'name': 'allele2_type',
-             'type': str,
-             'doc': ('Type of the second allele, e.g., Targeted (Recombinase), '
-                     'Transgenic (Null/knockout, Transactivator), Targeted (Conditional ready, Inducible, Reporter).'
-                     '"Wild Type" should be used to represent wild-type. Allele types can be found at: '
-                     'http://www.informatics.jax.org/userhelp/ALLELE_phenotypic_categories_help.shtml#method'),
-             'default': None},
-            {'name': 'allele2_crid',
-             'type': 'array_data',
-             'doc': ('Central Registry ID (CRID) of the second allele, e.g., MGI 1343464 => registry: MGI, '
-                     'symbol: 1343464. Multiple CRIDs can be associated with each allele.'),
-             'default': None},
-            {'name': 'allele3_symbol',
-             'type': str,
-             'doc': ('Symbol/name of the third allele, e.g., Rorb-IRES2-Cre. '
-                     '"wt" should be used to represent wild-type.'),
-             'default': None},
-            {'name': 'allele3_type',
-             'type': str,
-             'doc': ('Type of the third allele, e.g., Targeted (Recombinase), '
-                     'Transgenic (Null/knockout, Transactivator), Targeted (Conditional ready, Inducible, Reporter).'
-                     '"Wild Type" should be used to represent wild-type. Allele types can be found at: '
-                     'http://www.informatics.jax.org/userhelp/ALLELE_phenotypic_categories_help.shtml#method'),
-             'default': None},
-            {'name': 'allele3_crid',
-             'type': 'array_data',
-             'doc': ('Central Registry ID (CRID) of the third allele, e.g., MGI 1343464 => registry: MGI, '
-                     'symbol: 1343464. Multiple CRIDs can be associated with each allele.'),
-             'default': None},
-            {'name': 'id', 'type': int, 'default': None,
-             'doc': 'the id for each unit'},
-            allow_extra=True,
-            allow_positional=AllowPositional.ERROR)
+    @docval(
+        {
+            'name': 'locus',
+            'type': str,
+            'doc': 'Symbol/name of the locus, e.g., Rorb.',
+        },
+        {
+            'name': 'allele1',
+            'type': DynamicTableRegion,
+            'doc': ('...'),
+        },
+        {
+            'name': 'allele2',
+            'type': DynamicTableRegion,
+            'doc': ('...'),
+        },
+        {
+            'name': 'allele3',
+            'type': DynamicTableRegion,
+            'doc': ('...'),
+            'default': None,
+        },
+        {
+            'name': 'locus_resource_name',
+            'type': str,
+            'doc': '...',
+            'default': None,
+        },
+        {
+            'name': 'locus_resource_uri',
+            'type': str,
+            'doc': '...',
+            'default': None,
+        },
+        {
+            'name': 'locus_entity_id',
+            'type': str,
+            'doc': '...',
+            'default': None,
+        },
+        {
+            'name': 'locus_entity_uri',
+            'type': str,
+            'doc': '...',
+            'default': None,
+        },
+        allow_extra=True,
+        allow_positional=AllowPositional.ERROR
+    )
     def add_genotype(self, **kwargs):
         """Add a genotype to this table."""
-        locus_crid = popargs('locus_crid', kwargs)
-        if len(locus_crid) == 0:
-            raise ValueError('locus_crid must be an array/list/tuple containing at least 1 CRID.')
-        err_msg = GenotypesTable.__check_crid_array(locus_crid)
-        if err_msg:
-            raise ValueError('locus_crid %s' % err_msg)
-
-        allele1_crid, allele2_crid, allele3_crid = popargs('allele1_crid', 'allele2_crid', 'allele3_crid', kwargs)
-        if allele1_crid:
-            err_msg = GenotypesTable.__check_crid_array(allele1_crid)
-            if err_msg:
-                raise ValueError('allele1_crid %s' % err_msg)
-        if allele2_crid:
-            err_msg = GenotypesTable.__check_crid_array(allele2_crid)
-            if err_msg:
-                raise ValueError('allele2_crid %s' % err_msg)
-        if allele3_crid:
-            err_msg = GenotypesTable.__check_crid_array(allele3_crid)
-            if err_msg:
-                raise ValueError('allele3_crid %s' % err_msg)
-
-        allele3_symbol, allele3_type = getargs('allele3_symbol', 'allele3_type', kwargs)
-        if (allele3_type or allele3_crid) and allele3_symbol is None:
-            raise ValueError('allele3_symbol must be provided if allele3_type or allele3_crid are provided.')
-
         super().add_row(**kwargs)
 
-        locus_symbol = getargs('locus_symbol', kwargs)
-        allele1_symbol = getargs('allele1_symbol', kwargs)
-        allele2_symbol = getargs('allele2_symbol', kwargs)
-
-        self.__add_crid('locus_symbol', locus_symbol, locus_crid)
-        if allele1_symbol and allele1_crid:
-            self.__add_crid('allele1_symbol', allele1_symbol, allele1_crid)
-        if allele2_symbol and allele2_crid:
-            self.__add_crid('allele2_symbol', allele2_symbol, allele2_crid)
-        if allele3_symbol and allele3_crid:
-            self.__add_crid('allele3_symbol', allele3_symbol, allele3_crid)
+        locus = getargs('locus', kwargs)
+        locus_resource_name, locus_resource_uri, locus_entity_id, locus_entity_uri = getargs('locus_resource_name', 'locus_resource_uri', 'locus_entity_id', 'locus_entity_uri', kwargs)
+        
+        nwbfile = self.get_the_nwb_file()  # TODO
+        nwbfile.external_resources.add_ref(
+            container=self, 
+            field='locus', 
+            key=locus, 
+            resource_name=locus_resource_name,
+            resource_uri=locus_resource_urim
+            entity_id=locus_entity_id,
+            entity_uri=locus_entity_uri
+        )
 
     def __add_crid(self, field_name, symbol, crid_arr):
         """Add a CRID to the NWBFile ontology table.
