@@ -117,8 +117,12 @@ groups:
     then this type would be removed and theSubject specification updated instead.'
   groups:
   - name: genotypes_table
-    neurodata_type_inc: GenotypeTable
+    neurodata_type_inc: GenotypesTable
     doc: Structured genotype information for the subject.
+    quantity: '?'
+  - name: alleles_table
+    neurodata_type_inc: AllelesTable
+    doc: Structured allele information for the subject.
     quantity: '?'
 - neurodata_type_def: GenotypeNWBFile
   neurodata_type_inc: NWBFile
