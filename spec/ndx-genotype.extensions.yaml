@@ -1,43 +1,3 @@
-datasets:
-- neurodata_type_def: OntologyTable
-  neurodata_type_inc: Data
-  dtype:
-  - name: id
-    dtype: uint64
-    doc: The unique identifier in this table.
-  - name: object_id
-    dtype: text
-    doc: The UUID for the object that uses this ontology term.
-  - name: field
-    dtype: text
-    doc: The field from the object (specified by object_id) that uses this ontological
-      term.
-  - name: item
-    dtype: uint64
-    doc: An index into the OntologyMap that contains the term.
-  shape:
-  - null
-  doc: A table for identifying which objects in a file contain values that correspond
-    to ontology terms or centrally registered IDs (CRIDs)
-- neurodata_type_def: OntologyMap
-  neurodata_type_inc: Data
-  dtype:
-  - name: id
-    dtype: uint64
-    doc: The unique identifier in this table.
-  - name: key
-    dtype: text
-    doc: The user key that maps to the ontology term / registry symbol.
-  - name: ontology
-    dtype: text
-    doc: The ontology/registry that the term/symbol comes from.
-  - name: uri
-    dtype: text
-    doc: The unique resource identifier for the ontology term / registry symbol.
-  shape:
-  - null
-  doc: A table for mapping user terms (i.e., keys) to ontology terms / registry symbols
-    / centrally registered IDs (CRIDs)
 groups:
 - neurodata_type_def: GenotypesTable
   neurodata_type_inc: DynamicTable
@@ -139,13 +99,6 @@ groups:
       neurodata_type_inc: GenotypeSubject
       doc: Subject information with structured genotype information.
       quantity: '?'
-  - name: .ontologies
-    doc: Information about ontological terms used in this file.
-    quantity: '?'
-    datasets:
-    - name: objects
-      neurodata_type_inc: OntologyTable
-      doc: The objects that conform to an ontology.
-    - name: terms
-      neurodata_type_inc: OntologyMap
-      doc: The ontological terms that get used in this file.
+  - name: .external_resources
+    neurodata_type_inc: ExternalResources
+    doc: External resources used in this file.

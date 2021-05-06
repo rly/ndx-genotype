@@ -23,5 +23,8 @@ namespaces:
     - DynamicTableRegion
     - VectorData
     - Data
+  - namespace: hdmf-experimental
+    neurodata_types:
+    - ExternalResources
   - source: ndx-genotype.extensions.yaml
   version: 0.2.0

@@ -2,9 +2,7 @@
 
 import os.path
 
-from pynwb.spec import NWBNamespaceBuilder, export_spec, NWBGroupSpec, NWBAttributeSpec, NWBDatasetSpec, NWBDtypeSpec
-# TODO: import the following spec classes as needed
-# from pynwb.spec import , NWBLinkSpec, , NWBRefSpec
+from pynwb.spec import NWBNamespaceBuilder, export_spec, NWBGroupSpec, NWBAttributeSpec, NWBDatasetSpec
 
 
 def main():
@@ -25,6 +23,7 @@ def main():
     ns_builder.include_type('DynamicTableRegion', namespace='core')
     ns_builder.include_type('VectorData', namespace='core')
     ns_builder.include_type('Data', namespace='core')
+    ns_builder.include_type('ExternalResources', namespace='hdmf-experimental')  # TODO migrate to core
 
     genotypes_table_spec = NWBGroupSpec(
         neurodata_type_def='GenotypesTable',
@@ -179,87 +178,14 @@ def main():
                 ],
             ),
             NWBGroupSpec(
-                name='.ontologies',
-                doc='Information about ontological terms used in this file.',
-                quantity='?',
-                datasets=[
-                    NWBDatasetSpec(
-                        name='objects',
-                        neurodata_type_inc='OntologyTable',
-                        doc='The objects that conform to an ontology.',
-                    ),
-                    NWBDatasetSpec(
-                        name='terms',
-                        neurodata_type_inc='OntologyMap',
-                        doc='The ontological terms that get used in this file.',
-                    ),
-                ],
+                name='.external_resources',
+                neurodata_type_inc='ExternalResources',
+                doc='External resources used in this file.',
             ),
         ],
     )
 
-    ontology_table_spec = NWBDatasetSpec(
-        neurodata_type_def='OntologyTable',
-        neurodata_type_inc='Data',
-        doc=('A table for identifying which objects in a file contain values that correspond to ontology terms or '
-             'centrally registered IDs (CRIDs)'),
-        dtype=[
-            NWBDtypeSpec(
-                name='id',
-                dtype='uint64',
-                doc='The unique identifier in this table.'
-            ),
-            NWBDtypeSpec(
-                name='object_id',
-                dtype='text',
-                doc='The UUID for the object that uses this ontology term.'
-            ),
-            NWBDtypeSpec(
-                name='field',
-                dtype='text',
-                doc='The field from the object (specified by object_id) that uses this ontological term.'
-            ),
-            NWBDtypeSpec(
-                name='item',
-                dtype='uint64',
-                doc='An index into the OntologyMap that contains the term.'
-            ),
-        ],
-        shape=[None],
-    )
-
-    ontology_map_spec = NWBDatasetSpec(
-        neurodata_type_def='OntologyMap',
-        neurodata_type_inc='Data',
-        doc=('A table for mapping user terms (i.e., keys) to ontology terms / registry symbols / '
-             'centrally registered IDs (CRIDs)'),
-        dtype=[
-            NWBDtypeSpec(
-                name='id',
-                dtype='uint64',
-                doc='The unique identifier in this table.'
-            ),
-            NWBDtypeSpec(
-                name='key',
-                dtype='text',
-                doc='The user key that maps to the ontology term / registry symbol.'
-            ),
-            NWBDtypeSpec(
-                name='ontology',
-                dtype='text',
-                doc='The ontology/registry that the term/symbol comes from.'
-            ),
-            NWBDtypeSpec(
-                name='uri',
-                dtype='text',
-                doc='The unique resource identifier for the ontology term / registry symbol.'
-            ),
-        ],
-        shape=[None],
-    )
-
-    new_data_types = [genotypes_table_spec, alleles_table_spec, genotype_subject_spec, genotype_nwbfile_spec,
-                      ontology_table_spec, ontology_map_spec]
+    new_data_types = [genotypes_table_spec, alleles_table_spec, genotype_subject_spec, genotype_nwbfile_spec]
 
     # export the spec to yaml files in the spec folder
     output_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'spec'))
