@@ -7,6 +7,12 @@ from pynwb.testing import TestCase, remove_test_file
 from ndx_genotype import GenotypeNWBFile, GenotypeSubject, GenotypesTable
 
 
+class TestAllelesTable(TestCase):
+
+    # TODO fill me in
+    pass
+
+
 class TestGenotypesTable(TestCase):
 
     def test_constructor_basic(self):
@@ -41,14 +47,18 @@ class TestGenotypesTable(TestCase):
     def test_add_minimal(self):
         """Test that the constructor for GenotypesTable sets values as expected."""
         gt = self.set_up_genotypes_table({})
+        allele1_symbol = 'Rorb-IRES2-Cre'
+        allele2_symbol = 'wt'
+        gt.add_allele(symbol=allele1_symbol)
+        gt.add_allele(symbol=allele2_symbol)
         gt.add_genotype(
-            locus_symbol='Rorb',
-            locus_crid=[('MGI', '1343464')],
-            allele1_symbol='Rorb-IRES2-Cre',
+            locus='Rorb',
+            allele1=gt.get_allele(allele1_symbol),
+            allele2=gt.get_allele(allele2_symbol),
         )
-        self.assertEqual(gt[:, 'locus_symbol'], ['Rorb'])
-        self.assertEqual(gt[:, 'allele1_symbol'], ['Rorb-IRES2-Cre'])
-        self.assertTupleEqual(gt.get_locus_crid(0), (('MGI', '1343464'), ))
+        self.assertEqual(gt[:, 'locus'], ['Rorb'])
+        self.assertEqual(gt[:, 'allele1'], ['Rorb-IRES2-Cre'])
+        self.assertEqual(gt[:, 'allele2'], ['wt'])
 
     def test_add_typical(self):
         gt = self.set_up_genotypes_table(dict(process='PCR'))

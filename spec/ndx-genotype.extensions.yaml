@@ -76,6 +76,10 @@ groups:
   - name: allele3
     neurodata_type_inc: DynamicTableRegion
     doc: '...'
+  groups:
+  - name: alleles_table
+    neurodata_type_inc: AllelesTable
+    doc: Structured allele information for the subject.
 - neurodata_type_def: AllelesTable
   neurodata_type_inc: DynamicTable
   doc: A table to hold structured allele information.
@@ -118,10 +122,6 @@ groups:
   - name: genotypes_table
     neurodata_type_inc: GenotypesTable
     doc: Structured genotype information for the subject.
-    quantity: '?'
-  - name: alleles_table
-    neurodata_type_inc: AllelesTable
-    doc: Structured allele information for the subject.
     quantity: '?'
 - neurodata_type_def: GenotypeNWBFile
   neurodata_type_inc: NWBFile

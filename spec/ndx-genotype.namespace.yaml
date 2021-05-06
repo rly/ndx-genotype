@@ -4,8 +4,13 @@ namespaces:
   - Oliver Ruebel
   - Pam Baker
   - Lydia Ng
+  - Matthew Avaylon
   contact:
   - rly@lbl.gov
+  - oruebel@lbl.gov
+  - pamela.baker@alleninstitute.org
+  - LydiaN@alleninstitute.org
+  - mavaylon@lbl.gov
   doc: An NWB extension to describe the detailed genotype of an experimental subject
   name: ndx-genotype
   schema:
@@ -19,4 +24,4 @@ namespaces:
     - VectorData
     - Data
   - source: ndx-genotype.extensions.yaml
-  version: 0.1.0
+  version: 0.2.0

@@ -12,9 +12,10 @@ def main():
     ns_builder = NWBNamespaceBuilder(
         doc="""An NWB extension to describe the detailed genotype of an experimental subject""",
         name="""ndx-genotype""",
-        version="""0.1.0""",
-        author=list(map(str.strip, """Ryan Ly, Oliver Ruebel, Pam Baker, Lydia Ng""".split(','))),
-        contact=list(map(str.strip, """rly@lbl.gov""".split(',')))
+        version="""0.2.0""",
+        author=list(map(str.strip, """Ryan Ly, Oliver Ruebel, Pam Baker, Lydia Ng, Matthew Avaylon""".split(','))),
+        contact=list(map(str.strip, ("""rly@lbl.gov, oruebel@lbl.gov, pamela.baker@alleninstitute.org, """
+                                     """LydiaN@alleninstitute.org, mavaylon@lbl.gov""").split(',')))
     )
 
     ns_builder.include_type('Subject', namespace='core')
@@ -80,6 +81,13 @@ def main():
                 doc=('...'),
             ),
         ],
+        groups=[
+            NWBGroupSpec(
+                name='alleles_table',
+                neurodata_type_inc='AllelesTable',
+                doc='Structured allele information for the subject.',
+            )
+        ],
     )
 
     alleles_table_spec = NWBGroupSpec(
@@ -143,12 +151,6 @@ def main():
                 name='genotypes_table',
                 neurodata_type_inc='GenotypesTable',
                 doc='Structured genotype information for the subject.',
-                quantity='?',
-            ),
-            NWBGroupSpec(
-                name='alleles_table',
-                neurodata_type_inc='AllelesTable',
-                doc='Structured allele information for the subject.',
                 quantity='?',
             ),
         ],
