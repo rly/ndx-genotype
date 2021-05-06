@@ -1,7 +1,7 @@
 import datetime
 from dateutil.tz import tzlocal
 
-from pynwb import NWBHDF5IO
+from pynwb import NWBHDF5IO, validate as pynwb_validate
 from pynwb.testing import TestCase, remove_test_file
 
 from ndx_genotype import GenotypeNWBFile, GenotypeSubject, GenotypesTable
@@ -217,6 +217,10 @@ class TestGenotypesTableRoundtrip(TestCase):
             self.assertContainerEqual(genotypes_table, read_nwbfile.subject.genotypes_table)
             self.assertContainerEqual(self.nwbfile.ontology_objects, read_nwbfile.ontology_objects)
             self.assertContainerEqual(self.nwbfile.ontology_terms, read_nwbfile.ontology_terms)
+            errors = pynwb_validate(io, namespace='ndx-genotype')
+            if errors:
+                for err in errors:
+                    raise Exception(err)
 
     def test_roundtrip_minimal(self):
         # NOTE: writing an empty table is not allowed and raises an error
@@ -351,3 +355,7 @@ class TestGenotypeSubjectRoundtrip(TestCase):
         with NWBHDF5IO(self.path, mode='r', load_namespaces=True) as io:
             read_nwbfile = io.read()
             self.assertContainerEqual(self.nwbfile.subject, read_nwbfile.subject)
+            errors = pynwb_validate(io, namespace='ndx-genotype')
+            if errors:
+                for err in errors:
+                    raise Exception(err)

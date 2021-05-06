@@ -17,6 +17,5 @@ namespaces:
     - DynamicTable
     - VectorData
     - Data
-    - Container
   - source: ndx-genotype.extensions.yaml
   version: 0.1.0

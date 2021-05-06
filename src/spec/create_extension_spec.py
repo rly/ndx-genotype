@@ -23,7 +23,6 @@ def main():
     ns_builder.include_type('DynamicTable', namespace='core')
     ns_builder.include_type('VectorData', namespace='core')
     ns_builder.include_type('Data', namespace='core')
-    ns_builder.include_type('Container', namespace='core')
 
     genotypes_table_spec = NWBGroupSpec(
         neurodata_type_def='GenotypesTable',
@@ -187,6 +186,7 @@ def main():
 
     ontology_table_spec = NWBDatasetSpec(
         neurodata_type_def='OntologyTable',
+        neurodata_type_inc='Data',
         doc=('A table for identifying which objects in a file contain values that correspond to ontology terms or '
              'centrally registered IDs (CRIDs)'),
         dtype=[
@@ -216,6 +216,7 @@ def main():
 
     ontology_map_spec = NWBDatasetSpec(
         neurodata_type_def='OntologyMap',
+        neurodata_type_inc='Data',
         doc=('A table for mapping user terms (i.e., keys) to ontology terms / registry symbols / '
              'centrally registered IDs (CRIDs)'),
         dtype=[

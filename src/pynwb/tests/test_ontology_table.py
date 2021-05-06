@@ -1,7 +1,7 @@
 import datetime
 import numpy as np
 
-from pynwb import NWBHDF5IO, TimeSeries
+from pynwb import NWBHDF5IO, TimeSeries, validate as pynwb_validate
 from pynwb.core import DynamicTable
 from pynwb.testing import TestCase, remove_test_file
 
@@ -156,3 +156,7 @@ class TestOntologiesRoundTrip(TestCase):
             read_nwbfile = io.read()
             self.assertContainerEqual(self.nwbfile.ontology_objects, read_nwbfile.ontology_objects)
             self.assertContainerEqual(self.nwbfile.ontology_terms, read_nwbfile.ontology_terms)
+            errors = pynwb_validate(io, namespace='ndx-genotype')
+            if errors:
+                for err in errors:
+                    raise Exception(err)
