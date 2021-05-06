@@ -4,6 +4,7 @@ from pynwb import register_class
 from pynwb.core import NWBTable
 from pynwb.file import Subject, NWBFile
 from hdmf.utils import docval, get_docval, call_docval_func, popargs
+from hdmf.common import ExternalResources  # TODO import this from pynwb after ExternalResources is aliased in PyNWB
 
 from .genotypes_table import GenotypesTable
 
@@ -16,35 +17,28 @@ def _get_nwbfile_init_docval_except_subject():
 @register_class('GenotypeNWBFile', 'ndx-genotype')
 class GenotypeNWBFile(NWBFile):
 
-    __nwbfields__ = ({'name': 'ontology_objects', 'child': True, 'required_name': 'objects'},
-                     {'name': 'ontology_terms', 'child': True, 'required_name': 'terms'}, )
+    __nwbfields__ = (
+        {'name': 'external_resources', 'child': True, 'required_name': 'external_resources'},
+    )
 
     @docval(*_get_nwbfile_init_docval_except_subject(),
             {'name': 'subject',
              'type': 'GenotypeSubject',
              'doc': 'An enhanced Subject type that has an additional field for a genotype table.',
              'default': None},
-            {'name': 'ontology_objects',
-             'type': 'OntologyTable',
-             'doc': 'The objects that conform to an ontology.',
-             'default': None},
-            {'name': 'ontology_terms',
-             'type': 'OntologyMap',
-             'doc': 'The ontological terms that get used in this file.',
+            {'name': 'external_resources',
+             'type': 'ExternalResources',
+             'doc': 'The external resources that objects in the file are related to',
              'default': None},)
     def __init__(self, **kwargs):
         subject = popargs('subject', kwargs)
-        ontology_objects, ontology_terms = popargs('ontology_objects', 'ontology_terms', kwargs)
+        external_resources = popargs('external_resources', kwargs)
         call_docval_func(super().__init__, kwargs)
         self.subject = subject
-        if ontology_objects is not None:
-            self.ontology_objects = ontology_objects
+        if external_resources is not None:
+            self.external_resources = external_resources
         else:
-            self.ontology_objects = OntologyTable()
-        if ontology_terms is not None:
-            self.ontology_terms = ontology_terms
-        else:
-            self.ontology_terms = OntologyMap()
+            self.external_resources = ExternalResources()
 
 
 @register_class('GenotypeSubject', 'ndx-genotype')
