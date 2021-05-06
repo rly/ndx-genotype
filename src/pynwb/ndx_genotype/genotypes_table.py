@@ -1,5 +1,5 @@
 from pynwb import register_class
-from pynwb.core import DynamicTable
+from pynwb.core import DynamicTable, DynamicTableRegion
 from hdmf.utils import docval, get_docval, getargs, popargs, call_docval_func, AllowPositional
 
 
@@ -123,17 +123,20 @@ class GenotypesTable(DynamicTable):
         super().add_row(**kwargs)
 
         locus = getargs('locus', kwargs)
-        locus_resource_name, locus_resource_uri, locus_entity_id, locus_entity_uri = getargs('locus_resource_name', 'locus_resource_uri', 'locus_entity_id', 'locus_entity_uri', kwargs)
-        
+        locus_resource_name = getargs('locus_resource_name', kwargs)
+        locus_resource_uri = getargs('locus_resource_uri', kwargs)
+        locus_entity_id = getargs('locus_entity_id', kwargs)
+        locus_entity_uri = getargs('locus_entity_uri', kwargs)
+
         nwbfile = self.get_the_nwb_file()  # TODO
         nwbfile.external_resources.add_ref(
-            container=self, 
-            field='locus', 
-            key=locus, 
+            container=self,
+            field='locus',
+            key=locus,
             resource_name=locus_resource_name,
-            resource_uri=locus_resource_urim
+            resource_uri=locus_resource_uri,
             entity_id=locus_entity_id,
-            entity_uri=locus_entity_uri
+            entity_uri=locus_entity_uri,
         )
 
     def __add_crid(self, field_name, symbol, crid_arr):
