@@ -69,15 +69,13 @@ groups:
     doc: Symbol/name of the locus, e.g., Rorb.
   - name: allele1
     neurodata_type_inc: DynamicTableRegion
-    doc: Row reference to the AllelesTable representing the first allele.
+    doc: '...'
   - name: allele2
     neurodata_type_inc: DynamicTableRegion
-    doc: Row reference to the AllelesTable representing the second allele.
+    doc: '...'
   - name: allele3
     neurodata_type_inc: DynamicTableRegion
-    doc: Row reference to the AllelesTable representing the third allele.
-    quantity: '?'
-
+    doc: '...'
 - neurodata_type_def: AllelesTable
   neurodata_type_inc: DynamicTable
   doc: A table to hold structured allele information.
@@ -85,33 +83,32 @@ groups:
   - name: symbol
     neurodata_type_inc: VectorData
     dtype: text
-    doc: ...
+    doc: Symbol/name of the allele
   - name: generation_method
     neurodata_type_inc: VectorData
     dtype: text
-    doc: ...
+    doc: '...'
     quantity: '?'
   - name: recombinase
     neurodata_type_inc: VectorData
     dtype: text
-    doc: ...
+    doc: '...'
     quantity: '?'
   - name: reporter
     neurodata_type_inc: VectorData
     dtype: text
-    doc: ...
+    doc: '...'
     quantity: '?'
   - name: promoter
     neurodata_type_inc: VectorData
     dtype: text
-    doc: ...
+    doc: '...'
     quantity: '?'
   - name: flanked_sequence
     neurodata_type_inc: VectorData
     dtype: text
-    doc: ...
+    doc: '...'
     quantity: '?'
-
 - neurodata_type_def: GenotypeSubject
   neurodata_type_inc: Subject
   doc: 'An enhanced Subject type that has an additional field for a genotype table.

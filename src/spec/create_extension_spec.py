@@ -21,6 +21,7 @@ def main():
     ns_builder.include_type('NWBFile', namespace='core')
     ns_builder.include_type('NWBContainer', namespace='core')
     ns_builder.include_type('DynamicTable', namespace='core')
+    ns_builder.include_type('DynamicTableRegion', namespace='core')
     ns_builder.include_type('VectorData', namespace='core')
     ns_builder.include_type('Data', namespace='core')
 
@@ -58,67 +59,72 @@ def main():
         ],
         datasets=[
             NWBDatasetSpec(
-                name='locus_symbol',
+                name='locus',
                 neurodata_type_inc='VectorData',
                 doc='Symbol/name of the locus, e.g., Rorb.',
                 dtype='text',
             ),
             NWBDatasetSpec(
-                name='locus_type',
+                name='allele1',
+                neurodata_type_inc='DynamicTableRegion',
+                doc=('...'),
+            ),
+            NWBDatasetSpec(
+                name='allele2',
+                neurodata_type_inc='DynamicTableRegion',
+                doc=('...'),
+            ),
+            NWBDatasetSpec(
+                name='allele3',
+                neurodata_type_inc='DynamicTableRegion',
+                doc=('...'),
+            ),
+        ],
+    )
+
+    alleles_table_spec = NWBGroupSpec(
+        neurodata_type_def='AllelesTable',
+        neurodata_type_inc='DynamicTable',
+        doc='A table to hold structured allele information.',
+        datasets=[
+            NWBDatasetSpec(
+                name='symbol',
                 neurodata_type_inc='VectorData',
-                doc='Type of the locus, e.g., Gene, Transgene, Unclassified other.',
+                doc='Symbol/name of the allele',
+                dtype='text',
+            ),
+            NWBDatasetSpec(
+                name='generation_method',
+                neurodata_type_inc='VectorData',
+                doc='...',
                 dtype='text',
                 quantity='?',
             ),
             NWBDatasetSpec(
-                name='allele1_symbol',
+                name='recombinase',
                 neurodata_type_inc='VectorData',
-                doc=('Symbol/name of the first allele, e.g., Rorb-IRES2-Cre. '
-                     '"wt" should be used to represent wild-type.'),
-                dtype='text',
-            ),
-            NWBDatasetSpec(
-                name='allele1_type',
-                neurodata_type_inc='VectorData',
-                doc=('Type of the first allele, e.g., Targeted (Recombinase), '
-                     'Transgenic (Null/knockout, Transactivator), Targeted (Conditional ready, Inducible, Reporter).'
-                     '"Wild Type" should be used to represent wild-type. Allele types can be found at: '
-                     'http://www.informatics.jax.org/userhelp/ALLELE_phenotypic_categories_help.shtml#method'),
+                doc='...',
                 dtype='text',
                 quantity='?',
             ),
             NWBDatasetSpec(
-                name='allele2_symbol',
+                name='reporter',
                 neurodata_type_inc='VectorData',
-                doc=('Smybol/name of the second allele, e.g., Rorb-IRES2-Cre. '
-                     '"wt" should be used to represent wild-type.'),
-                dtype='text',
-            ),
-            NWBDatasetSpec(
-                name='allele2_type',
-                neurodata_type_inc='VectorData',
-                doc=('Type of the second allele, e.g., Targeted (Recombinase), '
-                     'Transgenic (Null/knockout, Transactivator), Targeted (Conditional ready, Inducible, Reporter).'
-                     '"Wild Type" should be used to represent wild-type. Allele types can be found at: '
-                     'http://www.informatics.jax.org/userhelp/ALLELE_phenotypic_categories_help.shtml#method'),
+                doc='...',
                 dtype='text',
                 quantity='?',
             ),
             NWBDatasetSpec(
-                name='allele3_symbol',
+                name='promoter',
                 neurodata_type_inc='VectorData',
-                doc=('Symbol/name of the third allele, e.g., Rorb-IRES2-Cre. '
-                     '"wt" should be used to represent wild-type.'),
+                doc='...',
                 dtype='text',
                 quantity='?',
             ),
             NWBDatasetSpec(
-                name='allele3_type',
+                name='flanked_sequence',
                 neurodata_type_inc='VectorData',
-                doc=('Type of the third allele, e.g., Targeted (Recombinase), '
-                     'Transgenic (Null/knockout, Transactivator), Targeted (Conditional ready, Inducible, Reporter).'
-                     '"Wild Type" should be used to represent wild-type. Allele types can be found at: '
-                     'http://www.informatics.jax.org/userhelp/ALLELE_phenotypic_categories_help.shtml#method'),
+                doc='...',
                 dtype='text',
                 quantity='?',
             ),
@@ -135,8 +141,14 @@ def main():
         groups=[
             NWBGroupSpec(
                 name='genotypes_table',
-                neurodata_type_inc='GenotypeTable',
+                neurodata_type_inc='GenotypesTable',
                 doc='Structured genotype information for the subject.',
+                quantity='?',
+            ),
+            NWBGroupSpec(
+                name='alleles_table',
+                neurodata_type_inc='AllelesTable',
+                doc='Structured allele information for the subject.',
                 quantity='?',
             ),
         ],
@@ -244,7 +256,7 @@ def main():
         shape=[None],
     )
 
-    new_data_types = [genotypes_table_spec, genotype_subject_spec, genotype_nwbfile_spec,
+    new_data_types = [genotypes_table_spec, alleles_table_spec, genotype_subject_spec, genotype_nwbfile_spec,
                       ontology_table_spec, ontology_map_spec]
 
     # export the spec to yaml files in the spec folder

@@ -15,6 +15,7 @@ namespaces:
     - NWBFile
     - NWBContainer
     - DynamicTable
+    - DynamicTableRegion
     - VectorData
     - Data
   - source: ndx-genotype.extensions.yaml
