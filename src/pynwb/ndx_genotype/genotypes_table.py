@@ -38,7 +38,7 @@ class AllelesTable(DynamicTable):
         {
             'name': 'symbol',
             'type': str,
-            'doc': 'Symbol/name of the allele, e.g., Rorb-IRES-Cre.',
+            'doc': ('Symbol/name of the allele, e.g., Rorb-IRES-Cre. This must be unique in the table.'),
         },
         allow_extra=True,
         allow_positional=AllowPositional.ERROR,
@@ -64,7 +64,7 @@ class AllelesTable(DynamicTable):
         if len(index) == 0:
             return None
         elif len(index) > 1:
-            warnings.warn("Multiple rows in alleles table contain symbol '%s'" % symbol)
+            warnings.warn("Multiple rows in alleles table contain symbol '%s'. Using the first match." % symbol)
         return index[0]
 
 
@@ -166,17 +166,19 @@ class GenotypesTable(DynamicTable):
         },
         {
             'name': 'allele1',
-            'type': 'scalar_data',
-            'doc': ('...'),
+            'type': (int, str),
+            'doc': ('The index of the first allele in the alleles table, or the symbol of the first allele. Providing '
+                    'the index is more efficient than providing the symbol, which requires a search through the '
+                    'alleles table.'),
         },
         {
             'name': 'allele2',
-            'type': 'scalar_data',
+            'type': (int, str),
             'doc': ('...'),
         },
         {
             'name': 'allele3',
-            'type': 'scalar_data',
+            'type': (int, str),
             'doc': ('...'),
             'default': None,
         },
@@ -210,7 +212,30 @@ class GenotypesTable(DynamicTable):
     def add_genotype(self, **kwargs):
         """Add a genotype to this table."""
 
-        # TODO check allele1 is an int
+        # if the allele symbol is passed in, get the index of the allele and use that in add_row
+        allele1 = getargs('allele1', kwargs)
+        if isinstance(allele1, str):
+            allele1_ind = self.get_allele_index(allele1)
+            if allele1_ind is None:
+                raise ValueError("'allele1' symbol '%s' not found in alleles table. Please first add the allele "
+                                 "using GenotypeTable.add_allele()." % allele1)
+            kwargs['allele1'] = allele1_ind
+        allele2 = getargs('allele2', kwargs)
+        if isinstance(allele2, str):
+            allele2_ind = self.get_allele_index(allele2)
+            if allele2_ind is None:
+                raise ValueError("'allele2' symbol '%s' not found in alleles table. Please first add the allele "
+                                 "using GenotypeTable.add_allele()." % allele1)
+            kwargs['allele2'] = allele2_ind
+        allele3 = getargs('allele3', kwargs)
+        if allele3 is not None and isinstance(allele3, str):
+            allele3_ind = self.get_allele_index(allele3)
+            if allele3_ind is None:
+                raise ValueError("'allele3' symbol '%s' not found in alleles table. Please first add the allele "
+                                 "using GenotypeTable.add_allele()." % allele1)
+            kwargs['allele3'] = allele3_ind
+
+        # if allele1 is an int, then
         locus_resource_name = popargs('locus_resource_name', kwargs)
         locus_resource_uri = popargs('locus_resource_uri', kwargs)
         locus_entity_id = popargs('locus_entity_id', kwargs)
@@ -241,14 +266,11 @@ class GenotypesTable(DynamicTable):
 
     # TODO docval
     def add_allele(self, **kwargs):
-        allele_ind = len(self.alleles_table)
+        # get the index of the new allele in the table, which will be the ID if passed, or the table length if
+        # auto-incremented
+        ind = kwargs.get('id',  len(self.alleles_table))
         self.alleles_table.add_row(**kwargs)
-        region = self.alleles_table.create_region(
-            name='TODO',
-            region=[allele_ind],
-            description='reference to allele ' + kwargs.get('symbol'),
-        )
-        return region
+        return ind
 
     @docval(*get_docval(AllelesTable.get_allele_index))
     def get_allele_index(self, **kwargs):

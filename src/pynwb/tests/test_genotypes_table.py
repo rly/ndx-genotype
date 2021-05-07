@@ -1,10 +1,11 @@
 import datetime
 from dateutil.tz import tzlocal
+import pandas as pd
 
 from pynwb import NWBHDF5IO, validate as pynwb_validate
 from pynwb.testing import TestCase, remove_test_file
 
-from ndx_genotype import GenotypeNWBFile, GenotypeSubject, GenotypesTable
+from ndx_genotype import GenotypeNWBFile, GenotypeSubject, GenotypesTable, AllelesTable
 
 
 class TestAllelesTable(TestCase):
@@ -28,6 +29,7 @@ class TestGenotypesTable(TestCase):
         self.assertEqual(gt.process_url, 'https://dx.doi.org/10.17504/protocols.io.yjifuke')
         self.assertEqual(gt.assembly, 'GRCm38.p6')
         self.assertEqual(gt.annotation, 'NCBI Mus musculus Annotation Release 108')
+        self.assertIsInstance(gt.alleles_table, AllelesTable)
 
     def set_up_genotypes_table(self, kwargs):
         nwbfile = GenotypeNWBFile(
@@ -37,51 +39,67 @@ class TestGenotypesTable(TestCase):
         )
         nwbfile.subject = GenotypeSubject(
             subject_id='3',
-            genotype='Rorb-IRES2-Cre/wt',
+            genotype='Vip-IRES-Cre/wt',
         )
         gt = GenotypesTable(**kwargs)
         nwbfile.subject.genotypes_table = gt  # GenotypesTable must be descendant of NWBFile before add_genotype works
         # TODO remove this dependency
         return gt
 
-    def test_add_minimal(self):
+    def test_add_minimal_with_allele_index(self):
         """Test that the constructor for GenotypesTable sets values as expected."""
         gt = self.set_up_genotypes_table({})
-        allele1_symbol = 'Rorb-IRES2-Cre'
-        allele2_symbol = 'wt'
-        gt.add_allele(symbol=allele1_symbol)
-        gt.add_allele(symbol=allele2_symbol)
+        allele1_ind = gt.add_allele(symbol='Vip-IRES-Cre')
+        allele2_ind = gt.add_allele(symbol='wt')
         gt.add_genotype(
-            locus='Rorb',
-            allele1=gt.get_allele_index(allele1_symbol),
-            allele2=gt.get_allele_index(allele2_symbol),
+            locus='Vip',
+            allele1=allele1_ind,
+            allele2=allele2_ind,
         )
-        self.assertEqual(gt[:, 'locus'], ['Rorb'])
-        self.assertEqual(gt[:, 'allele1'], ['Rorb-IRES2-Cre'])
-        self.assertEqual(gt[:, 'allele2'], ['wt'])
+        self.assertEqual(gt[:, 'locus'], ['Vip'])
+        exp = pd.DataFrame({'symbol': ['Vip-IRES-Cre']}, index=pd.Index(name='id', data=[0]))
+        pd.testing.assert_frame_equal(gt[:, 'allele1'], exp)  # TODO requires HDMF #579
+        exp = pd.DataFrame({'symbol': ['wt']}, index=pd.Index(name='id', data=[1]))
+        pd.testing.assert_frame_equal(gt[:, 'allele2'], exp)
+
+    def test_add_minimal_with_allele_symbol(self):
+        """Test that the constructor for GenotypesTable sets values as expected."""
+        gt = self.set_up_genotypes_table({})
+        gt.add_allele(symbol='Vip-IRES-Cre')
+        gt.add_allele(symbol='wt')
+        gt.add_genotype(
+            locus='Vip',
+            allele1='Vip-IRES-Cre',
+            allele2='wt',
+        )
+        self.assertEqual(gt[:, 'locus'], ['Vip'])
+        exp = pd.DataFrame({'symbol': ['Vip-IRES-Cre']}, index=pd.Index(name='id', data=[0]))
+        pd.testing.assert_frame_equal(gt[:, 'allele1'], exp)  # TODO requires HDMF #579
+        exp = pd.DataFrame({'symbol': ['wt']}, index=pd.Index(name='id', data=[1]))
+        pd.testing.assert_frame_equal(gt[:, 'allele2'], exp)
 
     def test_add_typical(self):
         gt = self.set_up_genotypes_table(dict(process='PCR'))
+        gt.add_allele(symbol='Vip-IRES-Cre')
+        gt.add_allele(symbol='wt')
+        gt.add_allele(symbol='Ai14(RCL-tdT)')
         gt.add_genotype(
-            locus_symbol='Rorb',
-            locus_crid=[('MGI', '1343464'), ('NCBI Gene', '225998')],
-            allele1_symbol='Rorb-IRES2-Cre',
-            allele1_crid=[('MGI', '5507855')],
-            allele2_symbol='wt',
+            locus='Vip',
+            allele1='Vip-IRES-Cre',
+            allele2='wt',
         )
         gt.add_genotype(
-            locus_symbol='locus_symbol',
-            locus_crid=[('MGI', '1')],
-            allele1_symbol='allele1_symbol',
-            allele1_crid=[('MGI', '2'), ('NCBI Gene', '3')],
-            allele2_symbol='allele2_symbol',
+            locus='ROSA26',
+            allele1='Ai14(RCL-tdT)',
+            allele2='wt',
         )
-        self.assertEqual(gt[:, 'locus_symbol'], ['Rorb', 'locus_symbol'])
-        self.assertEqual(gt[:, 'allele1_symbol'], ['Rorb-IRES2-Cre', 'allele1_symbol'])
-        self.assertTupleEqual(gt.get_locus_crid(0), (('MGI', '1343464'), ('NCBI Gene', '225998')))
-        self.assertTupleEqual(gt.get_locus_crid(1), (('MGI', '1'), ))
-        self.assertTupleEqual(gt.get_allele1_crid(0), (('MGI', '5507855'), ))
-        self.assertTupleEqual(gt.get_allele1_crid(1), (('MGI', '2'), ('NCBI Gene', '3')))
+        self.assertEqual(gt[:, 'locus'], ['Vip', 'ROSA26'])
+        exp = pd.DataFrame({'symbol': ['Vip-IRES-Cre', 'Ai14(RCL-tdT)']}, index=pd.Index(name='id', data=[0, 2]))
+        pd.testing.assert_frame_equal(gt[:, 'allele1'], exp)  # TODO requires HDMF #579
+        exp = pd.DataFrame({'symbol': ['wt', 'wt']}, index=pd.Index(name='id', data=[1, 1]))
+        pd.testing.assert_frame_equal(gt[:, 'allele2'], exp)
+
+        # TODO add external resources
 
     def test_add_full(self):
         gt = self.set_up_genotypes_table(dict(
@@ -90,104 +108,34 @@ class TestGenotypesTable(TestCase):
             assembly='GRCm38.p6',
             annotation='NCBI Mus musculus Annotation Release 108',
         ))
+        gt.add_allele(symbol='Vip-IRES-Cre')
+        gt.add_allele(symbol='wt')
+        gt.add_allele(symbol='Ai14(RCL-tdT)')
+        gt.add_allele(symbol='allele3')
         gt.add_genotype(
-            locus_symbol='Rorb2',
-            locus_type='Gene',
-            locus_crid=[('MGI', '1343464'), ('NCBI Gene', '225998')],
-            allele1_symbol='Rorb-IRES2-Cre',
-            allele1_type='Targeted (Recombinase)',
-            allele1_crid=[('MGI', '5507855')],
-            allele2_symbol='wt',
-            allele2_type='Wild Type',
-            allele2_crid=[],
-            allele3_symbol='None',  # TODO handle case where one gene has more alleles than the others
-            allele3_type='None',
-            allele3_crid=[],
+            locus='Vip',
+            allele1='Vip-IRES-Cre',
+            allele2='wt',
+            allele3='wt',
+            # NOTE if allele3 is provided for any genotype, then a non-None allele3 value must be provided for all
+            # genotypes...
         )
         gt.add_genotype(
-            locus_symbol='locus_symbol',
-            locus_type='locus_type',
-            locus_crid=[('MGI', '1')],
-            allele1_symbol='allele1_symbol',
-            allele1_type='allele1_type',
-            allele1_crid=[('MGI', '3')],
-            allele2_symbol='allele2_symbol',
-            allele2_type='allele2_type',
-            allele2_crid=[('MGI', '4'), ('NCBI Gene', '5')],
-            allele3_symbol='allele3_symbol',
-            allele3_type='allele3_type',
-            allele3_crid=[('MGI', '6'), ('NCBI Gene', '7'), ('Ensembl', '8')],
+            locus='ROSA26',
+            allele1='Ai14(RCL-tdT)',
+            allele2='wt',
+            allele3='allele3',
         )
-        self.assertEqual(gt[:, 'locus_symbol'], ['Rorb2', 'locus_symbol'])
-        self.assertEqual(gt[:, 'locus_type'], ['Gene', 'locus_type'])
-        self.assertEqual(gt[:, 'allele1_symbol'], ['Rorb-IRES2-Cre', 'allele1_symbol'])
-        self.assertEqual(gt[:, 'allele1_type'], ['Targeted (Recombinase)', 'allele1_type'])
-        self.assertEqual(gt[:, 'allele2_symbol'], ['wt', 'allele2_symbol'])
-        self.assertEqual(gt[:, 'allele2_type'], ['Wild Type', 'allele2_type'])
-        self.assertEqual(gt[:, 'allele3_symbol'], ['None', 'allele3_symbol'])
-        self.assertEqual(gt[:, 'allele3_type'], ['None', 'allele3_type'])
-        self.assertTupleEqual(gt.get_locus_crid(0), (('MGI', '1343464'), ('NCBI Gene', '225998')))
-        self.assertTupleEqual(gt.get_locus_crid(1), (('MGI', '1'), ))
-        self.assertTupleEqual(gt.get_allele1_crid(0), (('MGI', '5507855'), ))
-        self.assertTupleEqual(gt.get_allele1_crid(1), (('MGI', '3'), ))
-        self.assertTupleEqual(gt.get_allele2_crid(0), tuple())
-        self.assertTupleEqual(gt.get_allele2_crid(1), (('MGI', '4'), ('NCBI Gene', '5')))
-        self.assertTupleEqual(gt.get_allele3_crid(0), tuple())
-        self.assertTupleEqual(gt.get_allele3_crid(1), (('MGI', '6'), ('NCBI Gene', '7'), ('Ensembl', '8')))
 
-    def test_constructor_bad_crid(self):
-        gt = GenotypesTable()
+        self.assertEqual(gt[:, 'locus'], ['Vip', 'ROSA26'])
+        exp = pd.DataFrame({'symbol': ['Vip-IRES-Cre', 'Ai14(RCL-tdT)']}, index=pd.Index(name='id', data=[0, 2]))
+        pd.testing.assert_frame_equal(gt[:, 'allele1'], exp)  # TODO requires HDMF #579
+        exp = pd.DataFrame({'symbol': ['wt', 'wt']}, index=pd.Index(name='id', data=[1, 1]))
+        pd.testing.assert_frame_equal(gt[:, 'allele2'], exp)
+        exp = pd.DataFrame({'symbol': ['wt', 'allele3']}, index=pd.Index(name='id', data=[1, 3]))
+        pd.testing.assert_frame_equal(gt[:, 'allele3'], exp)
 
-        msg = 'allele1_crid must be an array/list/tuple with tuples of length 2.'
-        with self.assertRaisesWith(ValueError, msg):
-            gt.add_genotype(
-                locus_symbol='Rorb',
-                locus_crid=[('MGI', '1')],
-                allele1_symbol='Rorb-IRES2-Cre',
-                allele2_symbol='wt',
-                allele1_crid=[('MGI', '3', 1)],
-            )
-
-        msg = ('locus_crid must be an array/list/tuple with tuples where the first element (registry) '
-               'is one of: "MGI", "NCBI Gene", or "Ensembl".')
-        with self.assertRaisesWith(ValueError, msg):
-            gt.add_genotype(
-                locus_symbol='Rorb',
-                locus_crid=[('REGISTRY', '1')],
-                allele1_symbol='Rorb-IRES2-Cre',
-                allele2_symbol='wt',
-            )
-
-        msg = ('allele2_crid must be an array/list/tuple with tuples where the second element (symbol) is a string.')
-        with self.assertRaisesWith(ValueError, msg):
-            gt.add_genotype(
-                locus_symbol='Rorb',
-                locus_crid=[('MGI', '1')],
-                allele1_symbol='Rorb-IRES2-Cre',
-                allele2_symbol='wt',
-                allele2_crid=[('MGI', 3)]
-            )
-
-        msg = ('allele3_crid must be an array/list/tuple with tuples where the second element (symbol) is a string.')
-        with self.assertRaisesWith(ValueError, msg):
-            gt.add_genotype(
-                locus_symbol='Rorb',
-                locus_crid=[('MGI', '1')],
-                allele1_symbol='Rorb-IRES2-Cre',
-                allele2_symbol='wt',
-                allele3_symbol='wt',
-                allele3_crid=[('MGI', 3)]
-            )
-
-        msg = ('allele3_symbol must be provided if allele3_type or allele3_crid are provided.')
-        with self.assertRaisesWith(ValueError, msg):
-            gt.add_genotype(
-                locus_symbol='Rorb',
-                locus_crid=[('MGI', '1')],
-                allele1_symbol='Rorb-IRES2-Cre',
-                allele2_symbol='wt',
-                allele3_crid=[('MGI', '3')]
-            )
+        # TODO add external resources
 
 
 class TestGenotypesTableRoundtrip(TestCase):
@@ -225,8 +173,6 @@ class TestGenotypesTableRoundtrip(TestCase):
         with NWBHDF5IO(self.path, mode='r', load_namespaces=True) as io:
             read_nwbfile = io.read()
             self.assertContainerEqual(genotypes_table, read_nwbfile.subject.genotypes_table)
-            self.assertContainerEqual(self.nwbfile.ontology_objects, read_nwbfile.ontology_objects)
-            self.assertContainerEqual(self.nwbfile.ontology_terms, read_nwbfile.ontology_terms)
             errors = pynwb_validate(io, namespace='ndx-genotype')
             if errors:
                 for err in errors:
