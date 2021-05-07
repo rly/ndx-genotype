@@ -15,14 +15,6 @@ namespaces:
   name: ndx-genotype
   schema:
   - namespace: core
-    neurodata_types:
-    - Subject
-    - NWBFile
-    - NWBContainer
-    - DynamicTable
-    - DynamicTableRegion
-    - VectorData
-    - Data
   - namespace: hdmf-experimental
     neurodata_types:
     - ExternalResources

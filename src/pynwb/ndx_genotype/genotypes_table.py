@@ -143,7 +143,7 @@ class GenotypesTable(DynamicTable):
             'default': None,
         },
         allow_extra=True,
-        allow_positional=AllowPositional.ERROR
+        allow_positional=AllowPositional.ERROR,
     )
     def add_genotype(self, **kwargs):
         """Add a genotype to this table."""

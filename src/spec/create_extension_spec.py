@@ -16,13 +16,7 @@ def main():
                                      """LydiaN@alleninstitute.org, mavaylon@lbl.gov""").split(',')))
     )
 
-    ns_builder.include_type('Subject', namespace='core')
-    ns_builder.include_type('NWBFile', namespace='core')
-    ns_builder.include_type('NWBContainer', namespace='core')
-    ns_builder.include_type('DynamicTable', namespace='core')
-    ns_builder.include_type('DynamicTableRegion', namespace='core')
-    ns_builder.include_type('VectorData', namespace='core')
-    ns_builder.include_type('Data', namespace='core')
+    ns_builder.include_namespace('core')
     ns_builder.include_type('ExternalResources', namespace='hdmf-experimental')  # TODO migrate to core
 
     genotypes_table_spec = NWBGroupSpec(
@@ -142,9 +136,8 @@ def main():
         neurodata_type_def='GenotypeSubject',
         neurodata_type_inc='Subject',
         doc=('An enhanced Subject type that has an additional field for a genotype table. '
-             'NOTE: If this proposal for extension '
-             'to NWB gets merged with the core schema, then this type would be removed and the'
-             'Subject specification updated instead.'),
+             'NOTE: If this proposal for extension to NWB gets merged with the core schema, then this type would be '
+             'removed and the Subject specification updated instead.'),
         groups=[
             NWBGroupSpec(
                 name='genotypes_table',
@@ -159,11 +152,9 @@ def main():
         neurodata_type_def='GenotypeNWBFile',
         neurodata_type_inc='NWBFile',
         doc=('Extension of the NWBFile class to allow 1) placing the new GenotypeSubject type '
-             'in /general/subject in the NWBFile and 2) placing the new ontologies group containing an '
-             'ontology table and ontology map. NOTE: If this proposal for extension '
-             'to NWB gets merged with the core schema, then this type would be removed and the '
-             'NWBFile specification updated instead. The ontologies types will be incorporated from HDMF '
-             'when they are finalized.'),
+             'in /general/subject in the NWBFile and 2) placing the new external resources group. '
+             'NOTE: If this proposal for extension to NWB gets merged with the core schema, then this type would be '
+             'removed and the NWBFile specification updated instead.'),
         groups=[
             NWBGroupSpec(
                 name='general',  # override existing general group

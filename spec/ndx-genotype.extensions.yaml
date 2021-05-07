@@ -77,7 +77,7 @@ groups:
   neurodata_type_inc: Subject
   doc: 'An enhanced Subject type that has an additional field for a genotype table.
     NOTE: If this proposal for extension to NWB gets merged with the core schema,
-    then this type would be removed and theSubject specification updated instead.'
+    then this type would be removed and the Subject specification updated instead.'
   groups:
   - name: genotypes_table
     neurodata_type_inc: GenotypesTable
@@ -86,11 +86,9 @@ groups:
 - neurodata_type_def: GenotypeNWBFile
   neurodata_type_inc: NWBFile
   doc: 'Extension of the NWBFile class to allow 1) placing the new GenotypeSubject
-    type in /general/subject in the NWBFile and 2) placing the new ontologies group
-    containing an ontology table and ontology map. NOTE: If this proposal for extension
-    to NWB gets merged with the core schema, then this type would be removed and the
-    NWBFile specification updated instead. The ontologies types will be incorporated
-    from HDMF when they are finalized.'
+    type in /general/subject in the NWBFile and 2) placing the new external resources
+    group. NOTE: If this proposal for extension to NWB gets merged with the core schema,
+    then this type would be removed and the NWBFile specification updated instead.'
   groups:
   - name: general
     doc: Expanded definition of general from NWBFile.
