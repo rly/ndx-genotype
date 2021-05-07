@@ -41,7 +41,9 @@ class GenotypeNWBFile(NWBFile):
 @register_class('GenotypeSubject', 'ndx-genotype')
 class GenotypeSubject(Subject):
 
-    __nwbfields__ = ({'name': 'genotypes_table', 'child': True, 'required_name': 'genotypes_table'})
+    __nwbfields__ = (
+        {'name': 'genotypes_table', 'child': True, 'required_name': 'genotypes_table'},
+    )
 
     @docval(
         *get_docval(Subject.__init__),

@@ -53,8 +53,8 @@ class TestGenotypesTable(TestCase):
         gt.add_allele(symbol=allele2_symbol)
         gt.add_genotype(
             locus='Rorb',
-            allele1=gt.get_allele(allele1_symbol),
-            allele2=gt.get_allele(allele2_symbol),
+            allele1=gt.get_allele_index(allele1_symbol),
+            allele2=gt.get_allele_index(allele2_symbol),
         )
         self.assertEqual(gt[:, 'locus'], ['Rorb'])
         self.assertEqual(gt[:, 'allele1'], ['Rorb-IRES2-Cre'])
