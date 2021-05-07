@@ -65,10 +65,10 @@ class TestGenotypesTable(TestCase):
     def test_add_minimal_with_allele_symbol(self):
         """Test that the constructor for GenotypesTable sets values as expected."""
         gt = self.set_up_genotypes_table({})
-        gt.add_allele(symbol='Vip-IRES-Cre')
+        gt.add_allele(symbol='Vip-IRES-Cre')  # TODO warn if there is no external resource / identifier
         gt.add_allele(symbol='wt')
         gt.add_genotype(
-            locus='Vip',
+            locus='Vip',  # TODO warn if there is no external resource / identifier
             allele1='Vip-IRES-Cre',
             allele2='wt',
         )
@@ -80,7 +80,9 @@ class TestGenotypesTable(TestCase):
 
     def test_add_typical(self):
         gt = self.set_up_genotypes_table(dict(process='PCR'))
-        gt.add_allele(symbol='Vip-IRES-Cre')
+        gt.add_allele(
+            symbol='Vip-IRES-Cre'
+        )
         gt.add_allele(symbol='wt')
         gt.add_allele(symbol='Ai14(RCL-tdT)')
         gt.add_genotype(
