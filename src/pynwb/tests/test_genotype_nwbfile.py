@@ -1,3 +1,5 @@
+# TODO move these functions to PyNWB core
+
 import datetime
 
 from hdmf.common import ExternalResources

@@ -41,8 +41,7 @@ class GenotypeNWBFile(NWBFile):
 @register_class('GenotypeSubject', 'ndx-genotype')
 class GenotypeSubject(Subject):
 
-    __nwbfields__ = ({'name': 'genotypes_table', 'child': True, 'required_name': 'genotypes_table'},
-                     {'name': 'alleles_table', 'child': True, 'required_name': 'alleles_table'}, )
+    __nwbfields__ = ({'name': 'genotypes_table', 'child': True, 'required_name': 'genotypes_table'})
 
     @docval(
         *get_docval(Subject.__init__),
@@ -52,18 +51,11 @@ class GenotypeSubject(Subject):
             'doc': 'Table of genotypes.',
             'default': None,
         },
-        {
-            'name': 'alleles_table',
-            'type': 'AllelesTable',
-            'doc': 'Table of alleles.',
-            'default': None,
-        }
     )
     def __init__(self, **kwargs):
-        genotypes_table, alleles_table = popargs('genotypes_table', 'alleles_table', kwargs)
+        genotypes_table = popargs('genotypes_table', kwargs)
         call_docval_func(super().__init__, kwargs)
         self.genotypes_table = genotypes_table
-        self.alleles_table = alleles_table
 
     def add_genotype(self, **kwargs):
         if self.genotypes_table is None:
