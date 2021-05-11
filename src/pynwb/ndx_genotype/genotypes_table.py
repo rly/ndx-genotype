@@ -303,13 +303,14 @@ class GenotypesTable(DynamicTable):
                 entity_uri=locus_entity_uri,
             )
 
-    # TODO docval
+    @docval(*get_docval(AllelesTable.add_allele))
     def add_allele(self, **kwargs):
         # get the index of the new allele in the table, which will be the ID if passed, or the table length if
         # auto-incremented
-        ind = kwargs.get('id',  len(self.alleles_table))
-        self.alleles_table.add_row(**kwargs)
-        return ind
+        # ind = kwargs.get('id',  len(self.alleles_table))
+        # self.alleles_table.add_row(**kwargs)
+        # return ind
+        return self.alleles_table.add_allele(**kwargs)
 
     @docval(*get_docval(AllelesTable.get_allele_index))
     def get_allele_index(self, **kwargs):

@@ -13,36 +13,12 @@ from ndx_genotype import GenotypeNWBFile, GenotypeSubject, GenotypesTable, Allel
 
 class TestAllelesTable(TestCase):
 
-    def setUp(self):
-        self.columns = [
-            {'name': 'generation_method', 'description': 'foo column'},
-            {'name': 'recombinase', 'description': 'bar column'},
-            {'name': 'reporter', 'description': 'baz column'},
-            {'name': 'promoter', 'description': 'baz column'},
-            {'name': 'flanked_sequence', 'description': 'baz column'}
-        ]
-        self.data = [
-            ['TBD'],
-            ['TBD'],
-            ['TBD'],
-            ['TBD'],
-            ['TBD'],
-            ['TBD']
-        ]
     def test_empty_table(self):
-        at = AllelesTable(columns=self.columns)
+        at = AllelesTable()
 
         self.assertEqual(at.name, 'alleles_table')
         self.assertEqual(at.description, 'Structured allele information')
-        self.assertTupleEqual(at.colnames, ('generation_method', 'recombinase', 'reporter', 'promoter', 'flanked_sequence', 'symbol'))
-
-    def test_data(self):
-        columns = [VectorData(name=s['name'], description=s['description'], data=d)
-                   for s, d in zip(self.columns, self.data)]
-        at = AllelesTable(id=[0], columns=columns)
-
-        # self.assertEqual(at.id.data, [0, 1, 2, 3, 4])
-        # self.assertTupleEqual(at.colnames, ('generation_method', 'recombinase', 'reporter', 'promoter', 'flanked_sequence', 'symbol'))
+        self.assertEqual(at.colnames, ('symbol',))
 
     def test_add_allele(self):
         at = AllelesTable()
@@ -51,37 +27,43 @@ class TestAllelesTable(TestCase):
         self.assertIsInstance(at.symbol, VectorData)
         self.assertEqual(at.symbol.data, ['Vipr2-IRES2-Cre'])
 
-# class TestGenotypesTable(TestCase):
-#
-#     def test_constructor_basic(self):
-#         """Test that the constructor for GenotypesTable sets values as expected."""
-#         gt = GenotypesTable(
-#             process='PCR',
-#             process_url='https://dx.doi.org/10.17504/protocols.io.yjifuke',
-#             assembly='GRCm38.p6',
-#             annotation='NCBI Mus musculus Annotation Release 108',
-#         )
-#         self.assertEqual(gt.name, 'genotypes_table')
-#         self.assertEqual(gt.process, 'PCR')
-#         self.assertEqual(gt.process_url, 'https://dx.doi.org/10.17504/protocols.io.yjifuke')
-#         self.assertEqual(gt.assembly, 'GRCm38.p6')
-#         self.assertEqual(gt.annotation, 'NCBI Mus musculus Annotation Release 108')
-#         self.assertIsInstance(gt.alleles_table, AllelesTable)
-#
-#     def set_up_genotypes_table(self, kwargs):
-#         nwbfile = GenotypeNWBFile(
-#             session_description='session_description',
-#             identifier='identifier',
-#             session_start_time=datetime.datetime.now(datetime.timezone.utc)
-#         )
-#         nwbfile.subject = GenotypeSubject(
-#             subject_id='3',
-#             genotype='Vip-IRES-Cre/wt',
-#         )
-#         gt = GenotypesTable(**kwargs)
-#         nwbfile.subject.genotypes_table = gt  # GenotypesTable must be descendant of NWBFile before add_genotype works
-#         # TODO remove this dependency
-#         return gt
+    def test_get_allele_index(self):
+        at = AllelesTable()
+        at.add_allele(symbol='Vipr2-IRES2-Cre')
+        index = at.get_allele_index(symbol='Vipr2-IRES2-Cre')
+        self.assertEqual(len(at.symbol.data), 1)
+
+class TestGenotypesTable(TestCase):
+
+    def test_constructor_basic(self):
+        """Test that the constructor for GenotypesTable sets values as expected."""
+        gt = GenotypesTable(
+            process='PCR',
+            process_url='https://dx.doi.org/10.17504/protocols.io.yjifuke',
+            assembly='GRCm38.p6',
+            annotation='NCBI Mus musculus Annotation Release 108',
+        )
+        self.assertEqual(gt.name, 'genotypes_table')
+        self.assertEqual(gt.process, 'PCR')
+        self.assertEqual(gt.process_url, 'https://dx.doi.org/10.17504/protocols.io.yjifuke')
+        self.assertEqual(gt.assembly, 'GRCm38.p6')
+        self.assertEqual(gt.annotation, 'NCBI Mus musculus Annotation Release 108')
+        self.assertIsInstance(gt.alleles_table, AllelesTable)
+
+    def set_up_genotypes_table(self, kwargs):
+        nwbfile = GenotypeNWBFile(
+            session_description='session_description',
+            identifier='identifier',
+            session_start_time=datetime.datetime.now(datetime.timezone.utc)
+        )
+        nwbfile.subject = GenotypeSubject(
+            subject_id='3',
+            genotype='Vip-IRES-Cre/wt',
+        )
+        gt = GenotypesTable(**kwargs)
+        nwbfile.subject.genotypes_table = gt  # GenotypesTable must be descendant of NWBFile before add_genotype works
+        # TODO remove this dependency
+        return gt
 #
 #     def test_add_minimal_with_allele_index(self):
 #         """Test that the constructor for GenotypesTable sets values as expected."""
@@ -99,22 +81,22 @@ class TestAllelesTable(TestCase):
 #         exp = pd.DataFrame({'symbol': ['wt']}, index=pd.Index(name='id', data=[1]))
 #         pd.testing.assert_frame_equal(gt[:, 'allele2'], exp)
 #
-#     def test_add_minimal_with_allele_symbol(self):
-#         """Test that the constructor for GenotypesTable sets values as expected."""
-#         gt = self.set_up_genotypes_table({})
-#         gt.add_allele(symbol='Vip-IRES-Cre')  # TODO warn if there is no external resource / identifier
-#         gt.add_allele(symbol='wt')
-#         gt.add_genotype(
-#             locus='Vip',  # TODO warn if there is no external resource / identifier
-#             allele1='Vip-IRES-Cre',
-#             allele2='wt',
-#         )
-#         self.assertEqual(gt[:, 'locus'], ['Vip'])
-#         exp = pd.DataFrame({'symbol': ['Vip-IRES-Cre']}, index=pd.Index(name='id', data=[0]))
-#         pd.testing.assert_frame_equal(gt[:, 'allele1'], exp)  # TODO requires HDMF #579
-#         exp = pd.DataFrame({'symbol': ['wt']}, index=pd.Index(name='id', data=[1]))
-#         pd.testing.assert_frame_equal(gt[:, 'allele2'], exp)
-#
+    def test_add_minimal_with_allele_symbol(self):
+        """Test that the constructor for GenotypesTable sets values as expected."""
+        gt = self.set_up_genotypes_table({})
+        gt.add_allele(symbol='Vip-IRES-Cre')  # TODO warn if there is no external resource / identifier
+        # gt.add_allele(symbol='wt')
+        # gt.add_genotype(
+        #     locus='Vip',  # TODO warn if there is no external resource / identifier
+        #     allele1='Vip-IRES-Cre',
+        #     allele2='wt',
+        # )
+        # self.assertEqual(gt[:, 'locus'], ['Vip'])
+        # exp = pd.DataFrame({'symbol': ['Vip-IRES-Cre']}, index=pd.Index(name='id', data=[0]))
+        # pd.testing.assert_frame_equal(gt[:, 'allele1'], exp)  # TODO requires HDMF #579
+        # exp = pd.DataFrame({'symbol': ['wt']}, index=pd.Index(name='id', data=[1]))
+        # pd.testing.assert_frame_equal(gt[:, 'allele2'], exp)
+
 #     def test_add_typical(self):
 #         gt = self.set_up_genotypes_table(dict(process='PCR'))
 #         gt.add_allele(
