@@ -14,6 +14,25 @@ class AllelesTable(DynamicTable):
         {'name': 'symbol',
          'description': 'Symbol/name of the allele.',
          'required': True},
+        {'name': 'generation_method',
+         'description': '...',
+         'required': False},
+        {'name': 'recombinase',
+         'description': ('An enzyme that mediates a recombination exchange'
+                         'reaction between two DNA templates, each containing a specific recognition site.'),
+         'required': False},
+        {'name': 'reporter',
+         'description': ('Sequence that forms all or part of the protein product encoded by a'
+                         'transgenic locus or modified endogenous locus and that encodes an enzyme'
+                         'whose activity can be used to detect the presence of that protein product.'),
+         'required': False},
+        {'name': 'promoter',
+         'description': ('A DNA sequence at which RNA polymerase binds and initiates transcription.'),
+         'required': False},
+        {'name': 'flanked_sequence',
+         'description': ('Region of DNA flanked by recombinase recognition sites.'),
+         'required': False}
+
     )
 
     @docval(
@@ -35,14 +54,34 @@ class AllelesTable(DynamicTable):
         call_docval_func(super().__init__, kwargs)
 
     @docval(
-        {
-            'name': 'symbol',
+            {'name': 'symbol',
             'type': str,
-            'doc': ('Symbol/name of the allele, e.g., Rorb-IRES-Cre. This must be unique in the table.'),
-        },
-        allow_extra=True,
-        allow_positional=AllowPositional.ERROR,
-    )
+            'doc': ('Symbol/name of the allele, e.g., Rorb-IRES-Cre. This must be unique in the table.')},
+            {'name': 'generation_method',
+            'type': str,
+            'doc': ('...'),
+            'default': None},
+            {'name': 'recombinase',
+            'type': str,
+            'doc': ('An enzyme that mediates a recombination exchange'
+                    'reaction between two DNA templates, each containing a specific recognition site.'),
+            'default': None},
+            {'name': 'reporter',
+            'type': str,
+            'doc': ('Sequence that forms all or part of the protein product encoded by a'
+                    'transgenic locus or modified endogenous locus and that encodes an enzyme'
+                    'whose activity can be used to detect the presence of that protein product.'),
+            'default': None},
+            {'name': 'promoter',
+            'type': str,
+            'doc': ('A DNA sequence at which RNA polymerase binds and initiates transcription.'),
+            'default': None},
+            {'name': 'flanked_sequence',
+            'type': str,
+            'doc': ('region of DNA flanked by recombinase recognition sites.'),
+            'default': None},
+            allow_extra=True,
+            allow_positional=AllowPositional.ERROR)
     def add_allele(self, **kwargs):
         """Add an allele to this table."""
         symbol = getargs('symbol', kwargs)

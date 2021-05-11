@@ -56,22 +56,25 @@ groups:
   - name: recombinase
     neurodata_type_inc: VectorData
     dtype: text
-    doc: '...'
+    doc: 'An enzyme that mediates a recombination exchange reaction between
+      two DNA templates, each containing a specific recognition site.'
     quantity: '?'
   - name: reporter
     neurodata_type_inc: VectorData
     dtype: text
-    doc: '...'
+    doc: 'Sequence that forms all or part of the protein product encoded by a
+      transgenic locus or modified endogenous locus and that encodes an enzyme
+      whose activity can be used to detect the presence of that protein product.'
     quantity: '?'
   - name: promoter
     neurodata_type_inc: VectorData
     dtype: text
-    doc: '...'
+    doc: 'A DNA sequence at which RNA polymerase binds and initiates transcription.'
     quantity: '?'
   - name: flanked_sequence
     neurodata_type_inc: VectorData
     dtype: text
-    doc: '...'
+    doc: 'Region of DNA flanked by recombinase recognition sites.'
     quantity: '?'
 - neurodata_type_def: GenotypeSubject
   neurodata_type_inc: Subject
