@@ -89,6 +89,26 @@ class AllelesTable(DynamicTable):
             raise ValueError("Allele symbol '%s' already exists in AllelesTable." % symbol)
         super().add_row(**kwargs)
 
+    def symbol_external_resource(self, **kwargs):
+        genotypes_table = kwargs['genotypes_table']
+        container = kwargs['container']
+        key_symbol = kwargs['key']
+        symbol_resource_name = kwargs['symbol_resource_name']
+        symbol_resource_uri = kwargs['symbol_resource_uri']
+        symbol_entity_id = kwargs['symbol_entity_id']
+        symbol_entity_uri = kwargs['symbol_entity_uri']
+        nwbfile = genotypes_table.get_ancestor(data_type='GenotypeNWBFile')
+        er = nwbfile.external_resources.add_ref(
+            container=self,
+            field='symbol',
+            key=key_symbol,
+            resource_name=symbol_resource_name,
+            resource_uri=symbol_resource_uri,
+            entity_id=symbol_entity_id,
+            entity_uri=symbol_entity_uri
+        )
+        return er
+
     @docval(
         {
             'name': 'symbol',
