@@ -197,8 +197,23 @@ class TestAllelesTable(TestCase):
 
     def test_alleles_table_without_genotype_table_external_resources(self):
         #TODO: This test checks the ValueError where if there is no GenotypeTable linked, then we can't add ER.
-        pass
+        container = self
+        key = 'key'
+        resource_name = 'resource_name'
+        resource_uri = 'resource_uri'
+        entity_id = 'entity_id'
+        entity_uri = 'entity_uri'
 
+        at = AllelesTable()
+        with self.assertRaises(ValueError):
+            at.flanked_sequence_external_resource(container=self,
+                                                field='flanked_sequence',
+                                                key=key,
+                                                resource_name=resource_name,
+                                                resource_uri=resource_uri,
+                                                entity_id=entity_id,
+                                                entity_uri=entity_uri
+                                                )
 # class TestGenotypesTable(TestCase):
 #
 #     def test_constructor_basic(self):
