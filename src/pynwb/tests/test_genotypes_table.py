@@ -3,7 +3,7 @@ from dateutil.tz import tzlocal
 import pandas as pd
 import numpy as np
 
-from hdmf.common import VectorData
+from hdmf.common import VectorData, ExternalResources
 
 from pynwb import NWBHDF5IO, validate as pynwb_validate
 from pynwb.testing import TestCase, remove_test_file
@@ -28,7 +28,7 @@ class TestAllelesTable(TestCase):
         self.assertIsInstance(at.symbol, VectorData)
         self.assertEqual(at.symbol.data, ['Vipr2-IRES2-Cre'])
 
-    def test_get_allele_index(self):
+    def test_get_allele_index(self): #Todo: change assert to check for value
         at = AllelesTable()
         at.add_allele(symbol='Vipr2-IRES2-Cre')
         index = at.get_allele_index(symbol='Vipr2-IRES2-Cre')
@@ -51,23 +51,153 @@ class TestAllelesTable(TestCase):
 
     def test_symbol_external_resource(self):
         container = self
-        key_symbol = 'TBD'
-        symbol_resource_name = 'TBD'
-        symbol_resource_uri = 'TBD'
-        symbol_entity_id = 'TBD'
-        symbol_entity_uri = 'TBD'
+        key = 'key'
+        resource_name = 'resource_name'
+        resource_uri = 'resource_uri'
+        entity_id = 'entity_id'
+        entity_uri = 'entity_uri'
+
+
 
         gt = self.set_up_genotypes_table({})
-        at = AllelesTable()
+        at = gt.alleles_table
+        nwbfile = at.get_ancestor(data_type='GenotypeNWBFile')
         at.add_allele(symbol='Vipr2-IRES2-Cre')
-        at.symbol_external_resource(genotypes_table=gt,
-                                    container=container,
+        at.symbol_external_resource(container=self,
                                     field='symbol',
-                                    key=key_symbol,
-                                    symbol_resource_name=symbol_resource_name,
-                                    symbol_resource_uri=symbol_resource_uri,
-                                    symbol_entity_id=symbol_entity_id,
-                                    symbol_entity_uri=symbol_entity_uri)
+                                    key=key,
+                                    resource_name=resource_name,
+                                    resource_uri=resource_uri,
+                                    entity_id=entity_id,
+                                    entity_uri=entity_uri
+                                    )
+        self.assertEqual(nwbfile.external_resources.keys.data, [('key',)])
+        self.assertEqual(nwbfile.external_resources.entities.data, [(0, 0, 'entity_id', 'entity_uri')])
+        self.assertEqual(nwbfile.external_resources.resources.data, [('resource_name',  'resource_uri')])
+
+    def test_generation_method_external_resource(self):
+        container = self
+        key = 'key'
+        resource_name = 'resource_name'
+        resource_uri = 'resource_uri'
+        entity_id = 'entity_id'
+        entity_uri = 'entity_uri'
+
+        gt = self.set_up_genotypes_table({})
+        at = gt.alleles_table
+        nwbfile = at.get_ancestor(data_type='GenotypeNWBFile')
+        at.add_allele(symbol='Vipr2-IRES2-Cre')
+        at.generation_method_external_resource(container=self,
+                                    field='generation_method',
+                                    key=key,
+                                    resource_name=resource_name,
+                                    resource_uri=resource_uri,
+                                    entity_id=entity_id,
+                                    entity_uri=entity_uri
+                                    )
+        self.assertEqual(nwbfile.external_resources.keys.data, [('key',)])
+        self.assertEqual(nwbfile.external_resources.entities.data, [(0, 0, 'entity_id', 'entity_uri')])
+        self.assertEqual(nwbfile.external_resources.resources.data, [('resource_name',  'resource_uri')])
+
+    def test_recombinase_external_resource(self):
+        container = self
+        key = 'key'
+        resource_name = 'resource_name'
+        resource_uri = 'resource_uri'
+        entity_id = 'entity_id'
+        entity_uri = 'entity_uri'
+
+        gt = self.set_up_genotypes_table({})
+        at = gt.alleles_table
+        nwbfile = at.get_ancestor(data_type='GenotypeNWBFile')
+        at.add_allele(symbol='Vipr2-IRES2-Cre')
+        at.recombinase_external_resource(container=self,
+                                    field='recombinase',
+                                    key=key,
+                                    resource_name=resource_name,
+                                    resource_uri=resource_uri,
+                                    entity_id=entity_id,
+                                    entity_uri=entity_uri
+                                    )
+        self.assertEqual(nwbfile.external_resources.keys.data, [('key',)])
+        self.assertEqual(nwbfile.external_resources.entities.data, [(0, 0, 'entity_id', 'entity_uri')])
+        self.assertEqual(nwbfile.external_resources.resources.data, [('resource_name',  'resource_uri')])
+
+    def test_reporter_external_resource(self):
+        container = self
+        key = 'key'
+        resource_name = 'resource_name'
+        resource_uri = 'resource_uri'
+        entity_id = 'entity_id'
+        entity_uri = 'entity_uri'
+
+        gt = self.set_up_genotypes_table({})
+        at = gt.alleles_table
+        nwbfile = at.get_ancestor(data_type='GenotypeNWBFile')
+        at.add_allele(symbol='Vipr2-IRES2-Cre')
+        at.reporter_external_resource(container=self,
+                                    field='reporter',
+                                    key=key,
+                                    resource_name=resource_name,
+                                    resource_uri=resource_uri,
+                                    entity_id=entity_id,
+                                    entity_uri=entity_uri
+                                    )
+        self.assertEqual(nwbfile.external_resources.keys.data, [('key',)])
+        self.assertEqual(nwbfile.external_resources.entities.data, [(0, 0, 'entity_id', 'entity_uri')])
+        self.assertEqual(nwbfile.external_resources.resources.data, [('resource_name',  'resource_uri')])
+
+    def test_promoter_external_resource(self):
+        container = self
+        key = 'key'
+        resource_name = 'resource_name'
+        resource_uri = 'resource_uri'
+        entity_id = 'entity_id'
+        entity_uri = 'entity_uri'
+
+        gt = self.set_up_genotypes_table({})
+        at = gt.alleles_table
+        nwbfile = at.get_ancestor(data_type='GenotypeNWBFile')
+        at.add_allele(symbol='Vipr2-IRES2-Cre')
+        at.promoter_external_resource(container=self,
+                                    field='promoter',
+                                    key=key,
+                                    resource_name=resource_name,
+                                    resource_uri=resource_uri,
+                                    entity_id=entity_id,
+                                    entity_uri=entity_uri
+                                    )
+        self.assertEqual(nwbfile.external_resources.keys.data, [('key',)])
+        self.assertEqual(nwbfile.external_resources.entities.data, [(0, 0, 'entity_id', 'entity_uri')])
+        self.assertEqual(nwbfile.external_resources.resources.data, [('resource_name',  'resource_uri')])
+
+    def test_flanked_sequence_external_resource(self):
+        container = self
+        key = 'key'
+        resource_name = 'resource_name'
+        resource_uri = 'resource_uri'
+        entity_id = 'entity_id'
+        entity_uri = 'entity_uri'
+
+        gt = self.set_up_genotypes_table({})
+        at = gt.alleles_table
+        nwbfile = at.get_ancestor(data_type='GenotypeNWBFile')
+        at.add_allele(symbol='Vipr2-IRES2-Cre')
+        at.flanked_sequence_external_resource(container=self,
+                                    field='flanked_sequence',
+                                    key=key,
+                                    resource_name=resource_name,
+                                    resource_uri=resource_uri,
+                                    entity_id=entity_id,
+                                    entity_uri=entity_uri
+                                    )
+        self.assertEqual(nwbfile.external_resources.keys.data, [('key',)])
+        self.assertEqual(nwbfile.external_resources.entities.data, [(0, 0, 'entity_id', 'entity_uri')])
+        self.assertEqual(nwbfile.external_resources.resources.data, [('resource_name',  'resource_uri')])
+
+    def test_alleles_table_without_genotype_table_external_resources(self):
+        #TODO: This test checks the ValueError where if there is no GenotypeTable linked, then we can't add ER.
+        pass
 
 # class TestGenotypesTable(TestCase):
 #

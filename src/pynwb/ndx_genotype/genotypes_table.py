@@ -87,27 +87,11 @@ class AllelesTable(DynamicTable):
         symbol = getargs('symbol', kwargs)
         if symbol in self.symbol:
             raise ValueError("Allele symbol '%s' already exists in AllelesTable." % symbol)
+        # get the index of the new allele in the table, which will be the ID if passed, or the table length if
+        # auto-incremented
+        ind = len(self)
         super().add_row(**kwargs)
-
-    def symbol_external_resource(self, **kwargs):
-        genotypes_table = kwargs['genotypes_table']
-        container = kwargs['container']
-        key_symbol = kwargs['key']
-        symbol_resource_name = kwargs['symbol_resource_name']
-        symbol_resource_uri = kwargs['symbol_resource_uri']
-        symbol_entity_id = kwargs['symbol_entity_id']
-        symbol_entity_uri = kwargs['symbol_entity_uri']
-        nwbfile = genotypes_table.get_ancestor(data_type='GenotypeNWBFile')
-        er = nwbfile.external_resources.add_ref(
-            container=self,
-            field='symbol',
-            key=key_symbol,
-            resource_name=symbol_resource_name,
-            resource_uri=symbol_resource_uri,
-            entity_id=symbol_entity_id,
-            entity_uri=symbol_entity_uri
-        )
-        return er
+        return ind
 
     @docval(
         {
@@ -126,14 +110,156 @@ class AllelesTable(DynamicTable):
             warnings.warn("Multiple rows in alleles table contain symbol '%s'. Using the first match." % symbol)
         return index[0]
 
+    def symbol_external_resource(self, **kwargs):
+        container = kwargs['container']
+        key = kwargs['key']
+        resource_name = kwargs['resource_name']
+        resource_uri = kwargs['resource_uri']
+        entity_id = kwargs['entity_id']
+        entity_uri = kwargs['entity_uri']
 
+        nwbfile = self.get_ancestor(data_type='GenotypeNWBFile')
+        if nwbfile is None:
+            msg = "AllelesTable must have a GenotypeNWBFile as an ancestor to associate with ExternalResources"
+            raise ValueError(msg)
+
+        er = nwbfile.external_resources.add_ref(
+            container=self,
+            field='symbol',
+            key=key,
+            resource_name=resource_name,
+            resource_uri=resource_uri,
+            entity_id=entity_id,
+            entity_uri=entity_uri
+        )
+        return er
+
+    def generation_method_external_resource(self, **kwargs):
+        container = kwargs['container']
+        key = kwargs['key']
+        resource_name = kwargs['resource_name']
+        resource_uri = kwargs['resource_uri']
+        entity_id = kwargs['entity_id']
+        entity_uri = kwargs['entity_uri']
+
+        nwbfile = self.get_ancestor(data_type='GenotypeNWBFile')
+        if nwbfile is None:
+            msg = "AllelesTable must have a GenotypeNWBFile as an ancestor to associate with ExternalResources"
+            raise ValueError(msg)
+
+        er = nwbfile.external_resources.add_ref(
+            container=self,
+            field='generation_method',
+            key=key,
+            resource_name=resource_name,
+            resource_uri=resource_uri,
+            entity_id=entity_id,
+            entity_uri=entity_uri
+        )
+        return er
+
+    def recombinase_external_resource(self, **kwargs):
+        container = kwargs['container']
+        key = kwargs['key']
+        resource_name = kwargs['resource_name']
+        resource_uri = kwargs['resource_uri']
+        entity_id = kwargs['entity_id']
+        entity_uri = kwargs['entity_uri']
+
+        nwbfile = self.get_ancestor(data_type='GenotypeNWBFile')
+        if nwbfile is None:
+            msg = "AllelesTable must have a GenotypeNWBFile as an ancestor to associate with ExternalResources"
+            raise ValueError(msg)
+
+        er = nwbfile.external_resources.add_ref(
+            container=self,
+            field='recombinase',
+            key=key,
+            resource_name=resource_name,
+            resource_uri=resource_uri,
+            entity_id=entity_id,
+            entity_uri=entity_uri
+        )
+        return er
+
+    def reporter_external_resource(self, **kwargs):
+        container = kwargs['container']
+        key = kwargs['key']
+        resource_name = kwargs['resource_name']
+        resource_uri = kwargs['resource_uri']
+        entity_id = kwargs['entity_id']
+        entity_uri = kwargs['entity_uri']
+
+        nwbfile = self.get_ancestor(data_type='GenotypeNWBFile')
+        if nwbfile is None:
+            msg = "AllelesTable must have a GenotypeNWBFile as an ancestor to associate with ExternalResources"
+            raise ValueError(msg)
+
+        er = nwbfile.external_resources.add_ref(
+            container=self,
+            field='reporter',
+            key=key,
+            resource_name=resource_name,
+            resource_uri=resource_uri,
+            entity_id=entity_id,
+            entity_uri=entity_uri
+        )
+        return er
+
+    def promoter_external_resource(self, **kwargs):
+        container = kwargs['container']
+        key = kwargs['key']
+        resource_name = kwargs['resource_name']
+        resource_uri = kwargs['resource_uri']
+        entity_id = kwargs['entity_id']
+        entity_uri = kwargs['entity_uri']
+
+        nwbfile = self.get_ancestor(data_type='GenotypeNWBFile')
+        if nwbfile is None:
+            msg = "AllelesTable must have a GenotypeNWBFile as an ancestor to associate with ExternalResources"
+            raise ValueError(msg)
+
+        er = nwbfile.external_resources.add_ref(
+            container=self,
+            field='promoter',
+            key=key,
+            resource_name=resource_name,
+            resource_uri=resource_uri,
+            entity_id=entity_id,
+            entity_uri=entity_uri
+        )
+        return er
+
+    def flanked_sequence_external_resource(self, **kwargs):
+        container = kwargs['container']
+        key = kwargs['key']
+        resource_name = kwargs['resource_name']
+        resource_uri = kwargs['resource_uri']
+        entity_id = kwargs['entity_id']
+        entity_uri = kwargs['entity_uri']
+
+        nwbfile = self.get_ancestor(data_type='GenotypeNWBFile')
+        if nwbfile is None:
+            msg = "AllelesTable must have a GenotypeNWBFile as an ancestor to associate with ExternalResources"
+            raise ValueError(msg)
+
+        er = nwbfile.external_resources.add_ref(
+            container=self,
+            field='flanked_sequence',
+            key=key,
+            resource_name=resource_name,
+            resource_uri=resource_uri,
+            entity_id=entity_id,
+            entity_uri=entity_uri
+        )
+        return er
 # NOTE: cannot write an empty genotypes table
 
 @register_class('GenotypesTable', 'ndx-genotype')
 class GenotypesTable(DynamicTable):
     """A table to hold structured genotype information."""
 
-    __nwbfields__ = (
+    __fields__ = (
         'process',
         'process_url',
         'assembly',
@@ -152,7 +278,7 @@ class GenotypesTable(DynamicTable):
         {'name': 'allele2',
          'description': '...',
          'table': True,
-         'required': False},
+         'required': True},
         {'name': 'allele3',
          'description': '...',
          'table': True,
@@ -325,12 +451,7 @@ class GenotypesTable(DynamicTable):
 
     @docval(*get_docval(AllelesTable.add_allele))
     def add_allele(self, **kwargs):
-        # get the index of the new allele in the table, which will be the ID if passed, or the table length if
-        # auto-incremented
-        # ind = kwargs.get('id',  len(self.alleles_table))
-        # self.alleles_table.add_row(**kwargs)
-        # return ind
-        return self.alleles_table.add_allele(**kwargs)
+        return call_docval_func(self.alleles_table.add_allele, kwargs)
 
     @docval(*get_docval(AllelesTable.get_allele_index))
     def get_allele_index(self, **kwargs):
