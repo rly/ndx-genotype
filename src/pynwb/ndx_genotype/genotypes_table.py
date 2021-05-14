@@ -4,6 +4,7 @@ import warnings
 from pynwb import register_class
 from pynwb.core import DynamicTable, DynamicTableRegion
 from hdmf.utils import docval, get_docval, getargs, popargs, call_docval_func, AllowPositional
+from hdmf.common import ExternalResources
 
 
 @register_class('AllelesTable', 'ndx-genotype')
@@ -110,6 +111,10 @@ class AllelesTable(DynamicTable):
             warnings.warn("Multiple rows in alleles table contain symbol '%s'. Using the first match." % symbol)
         return index[0]
 
+    @docval(
+        *get_docval(ExternalResources.add_ref, 'field', 'key', 'resource_name',
+                    'resource_uri', 'entity_id', 'entity_uri')
+    )
     def add_external_resource(self, **kwargs):
         field = kwargs['field']
         key = kwargs['key']
