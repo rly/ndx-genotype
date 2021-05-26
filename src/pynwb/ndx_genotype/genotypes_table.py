@@ -337,7 +337,8 @@ class GenotypesTable(DynamicTable):
 
     @docval(*get_docval(AllelesTable.add_allele))
     def add_allele(self, **kwargs):
-        return call_docval_func(self.alleles_table.add_allele, kwargs)
+        return self.alleles_table.add_row(**kwargs)
+        # return call_docval_func(self.alleles_table.add_allele, kwargs)
 
     @docval(*get_docval(AllelesTable.get_allele_index))
     def get_allele_index(self, **kwargs):

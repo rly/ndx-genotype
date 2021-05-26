@@ -57,8 +57,6 @@ class TestAllelesTable(TestCase):
         entity_id = 'entity_id'
         entity_uri = 'entity_uri'
 
-
-
         gt = self.set_up_genotypes_table({})
         at = gt.alleles_table
         nwbfile = at.get_ancestor(data_type='GenotypeNWBFile')
@@ -93,23 +91,23 @@ class TestAllelesTable(TestCase):
                                     entity_id=entity_id,
                                     entity_uri=entity_uri
                                     )
-# class TestGenotypesTable(TestCase):
-#
-#     def test_constructor_basic(self):
-#         """Test that the constructor for GenotypesTable sets values as expected."""
-#         gt = GenotypesTable(
-#             process='PCR',
-#             process_url='https://dx.doi.org/10.17504/protocols.io.yjifuke',
-#             assembly='GRCm38.p6',
-#             annotation='NCBI Mus musculus Annotation Release 108',
-#         )
-#         self.assertEqual(gt.name, 'genotypes_table')
-#         self.assertEqual(gt.process, 'PCR')
-#         self.assertEqual(gt.process_url, 'https://dx.doi.org/10.17504/protocols.io.yjifuke')
-#         self.assertEqual(gt.assembly, 'GRCm38.p6')
-#         self.assertEqual(gt.annotation, 'NCBI Mus musculus Annotation Release 108')
-#         self.assertIsInstance(gt.alleles_table, AllelesTable)
-#
+class TestGenotypesTable(TestCase):
+
+    def test_constructor_basic(self):
+        """Test that the constructor for GenotypesTable sets values as expected."""
+        gt = GenotypesTable(
+            process='PCR',
+            process_url='https://dx.doi.org/10.17504/protocols.io.yjifuke',
+            assembly='GRCm38.p6',
+            annotation='NCBI Mus musculus Annotation Release 108',
+        )
+        self.assertEqual(gt.name, 'genotypes_table')
+        self.assertEqual(gt.process, 'PCR')
+        self.assertEqual(gt.process_url, 'https://dx.doi.org/10.17504/protocols.io.yjifuke')
+        self.assertEqual(gt.assembly, 'GRCm38.p6')
+        self.assertEqual(gt.annotation, 'NCBI Mus musculus Annotation Release 108')
+        self.assertIsInstance(gt.alleles_table, AllelesTable)
+
     def set_up_genotypes_table(self, kwargs):
         nwbfile = GenotypeNWBFile(
             session_description='session_description',
@@ -124,22 +122,47 @@ class TestAllelesTable(TestCase):
         nwbfile.subject.genotypes_table = gt  # GenotypesTable must be descendant of NWBFile before add_genotype works
         # TODO remove this dependency
         return gt
-#
-#     def test_add_minimal_with_allele_index(self):
-#         """Test that the constructor for GenotypesTable sets values as expected."""
-#         gt = self.set_up_genotypes_table({})
-#         allele1_ind = gt.add_allele(symbol='Vip-IRES-Cre')
-#         allele2_ind = gt.add_allele(symbol='wt')
-#         gt.add_genotype(
-#             locus='Vip',
-#             allele1=allele1_ind,
-#             allele2=allele2_ind,
-#         )
-#         self.assertEqual(gt[:, 'locus'], ['Vip'])
-#         exp = pd.DataFrame({'symbol': ['Vip-IRES-Cre']}, index=pd.Index(name='id', data=[0]))
-#         pd.testing.assert_frame_equal(gt[:, 'allele1'], exp)  # TODO requires HDMF #579
-#         exp = pd.DataFrame({'symbol': ['wt']}, index=pd.Index(name='id', data=[1]))
-#         pd.testing.assert_frame_equal(gt[:, 'allele2'], exp)
+
+    def test_add_external_resource(self):
+        key = 'key'
+        resource_name = 'resource_name'
+        resource_uri = 'resource_uri'
+        entity_id = 'entity_id'
+        entity_uri = 'entity_uri'
+
+        gt = self.set_up_genotypes_table({})
+        nwbfile = gt.get_ancestor(data_type='GenotypeNWBFile')
+        allele1_ind = gt.add_allele(symbol='Vip-IRES-Cre')
+        allele2_ind = gt.add_allele(symbol='wt')
+        gt.add_genotype(locus='Vip',
+                        allele1='Vip-IRES-Cre',
+                        allele2='wt',
+                        locus_resource_name='locus_resource_name',
+                        locus_resource_uri='locus_resource_uri',
+                        locus_entity_id='locus_entity_id',
+                        locus_entity_uri='locus_entity_uri')
+
+
+        self.assertEqual(nwbfile.external_resources.keys.data, [('Vip',)])
+        self.assertEqual(nwbfile.external_resources.entities.data, [(0, 0, 'locus_entity_id', 'locus_entity_uri')])
+        self.assertEqual(nwbfile.external_resources.resources.data, [('locus_resource_name',  'locus_resource_uri')])
+
+
+    # def test_add_minimal_with_allele_index(self):
+    #     """Test that the constructor for GenotypesTable sets values as expected."""
+    #     gt = self.set_up_genotypes_table({})
+    #     allele1_ind = gt.add_allele(symbol='Vip-IRES-Cre')
+    #     allele2_ind = gt.add_allele(symbol='wt')
+    #     gt.add_genotype(
+    #         locus='Vip',
+    #         allele1=allele1_ind,
+    #         allele2=allele2_ind,
+    #     )
+    #     self.assertEqual(gt[:, 'locus'], ['Vip'])
+    #     exp = pd.DataFrame({'symbol': ['Vip-IRES-Cre']}, index=pd.Index(name='id', data=[0]))
+    #     pd.testing.assert_frame_equal(gt[:, 'allele1'], exp)  # TODO requires HDMF #579
+    #     exp = pd.DataFrame({'symbol': ['wt']}, index=pd.Index(name='id', data=[1]))
+    #     pd.testing.assert_frame_equal(gt[:, 'allele2'], exp)
 #
 #     def test_add_minimal_with_allele_symbol(self):
 #         """Test that the constructor for GenotypesTable sets values as expected."""
@@ -262,71 +285,64 @@ class TestAllelesTable(TestCase):
 #     def test_roundtrip_minimal(self):
 #         # NOTE: writing an empty table is not allowed and raises an error
 #         gt = self.set_up_genotypes_table(dict())
+#         gt.add_allele('Rorb-IRES2-Cre')
+#         gt.add_allele('wt')
+#         gt.add_allele('None') #why is this required?
 #         gt.add_genotype(
-#             locus_symbol='Rorb',
-#             locus_crid=[('MGI', '1343464')],
-#             allele1_symbol='Rorb-IRES2-Cre',
-#             allele2_symbol='wt',
+#             locus='Rorb',
+#             allele1='Rorb-IRES2-Cre',
+#             allele2='wt',
+#             allele3='None'
 #         )
 #         self.roundtrip(gt)
-#
-#     def test_roundtrip_typical(self):
-#         gt = self.set_up_genotypes_table(dict(
-#             process='PCR',
-#         ))
-#         gt.add_genotype(
-#             locus_symbol='Rorb',
-#             locus_crid=[('MGI', '1343464'), ('NCBI Gene', '225998')],
-#             allele1_symbol='Rorb-IRES2-Cre',
-#             allele1_crid=[('MGI', '5507855')],
-#             allele2_symbol='wt',
-#         )
-#         gt.add_genotype(
-#             locus_symbol='locus_symbol',
-#             locus_crid=[('MGI', '1')],
-#             allele1_symbol='Rorb-allele1_symbol-Cre',
-#             allele1_crid=[('MGI', '2'), ('NCBI Gene', '3')],
-#             allele2_symbol='allele2_symbol',
-#         )
-#         self.roundtrip(gt)
-#
-#     def test_roundtrip_full(self):
-#         gt = self.set_up_genotypes_table(dict(
-#             process='PCR',
-#             process_url='https://dx.doi.org/10.17504/protocols.io.yjifuke',
-#             assembly='GRCm38.p6',
-#             annotation='NCBI Mus musculus Annotation Release 108',
-#         ))
-#         gt.add_genotype(
-#             locus_symbol='Rorb2',
-#             locus_type='Gene',
-#             locus_crid=[('MGI', '1343464'), ('NCBI Gene', '225998')],
-#             allele1_symbol='Rorb-IRES2-Cre',
-#             allele1_type='Targeted (Recombinase)',
-#             allele1_crid=[('MGI', '5507855')],
-#             allele2_symbol='wt',
-#             allele2_type='Wild Type',
-#             allele2_crid=[],
-#             allele3_symbol='None',
-#             allele3_type='None',
-#             allele3_crid=[],
-#         )
-#         gt.add_genotype(
-#             locus_symbol='locus_symbol',
-#             locus_type='locus_type',
-#             locus_crid=[('MGI', '1')],
-#             allele1_symbol='allele1_symbol',
-#             allele1_type='allele1_type',
-#             allele1_crid=[('MGI', '3')],
-#             allele2_symbol='allele2_symbol',
-#             allele2_type='allele2_type',
-#             allele2_crid=[('MGI', '4'), ('NCBI Gene', '5')],
-#             allele3_symbol='allele3_symbol',
-#             allele3_type='allele3_type',
-#             allele3_crid=[('MGI', '6'), ('NCBI Gene', '7'), ('Ensembl', '8')],
-#         )
-#         self.roundtrip(gt)
-#
+
+    # def test_roundtrip_typical(self):
+    #     gt = self.set_up_genotypes_table(dict(
+    #         process='PCR',
+    #     ))
+    #     gt.add_allele('Rorb-IRES2-Cre')
+    #     gt.add_allele('wt')
+    #     gt.add_allele('Rorb-allele1_symbol-Cre')
+    #     gt.add_allele('allele2_symbol')
+    #     gt.add_genotype(
+    #         locus='Rorb',
+    #         allele1='Rorb-IRES2-Cre',
+    #         allele2='wt'
+    #     )
+    #     gt.add_genotype(
+    #         locus='locus_symbol',
+    #         allele1='Rorb-allele1_symbol-Cre',
+    #         allele2='allele2_symbol'
+    #     )
+    #     self.roundtrip(gt)
+    #
+    # def test_roundtrip_full(self):
+    #     gt = self.set_up_genotypes_table(dict(
+    #         process='PCR',
+    #         process_url='https://dx.doi.org/10.17504/protocols.io.yjifuke',
+    #         assembly='GRCm38.p6',
+    #         annotation='NCBI Mus musculus Annotation Release 108',
+    #     ))
+    #     gt.add_allele('Rorb-IRES2-Cre')
+    #     gt.add_allele('wt')
+    #     gt.add_allele('allele1_symbol')
+    #     gt.add_allele('allele2_symbol')
+    #     gt.add_allele('allele3_symbol')
+    #
+    #     gt.add_genotype(
+    #         locus='Rorb2',
+    #         allele1='Rorb-IRES2-Cre',
+    #         allele2='wt',
+    #         allele3='None'
+    #     )
+    #     gt.add_genotype(
+    #         locus='locus_symbol',
+    #         allele1='allele1_symbol',
+    #         allele2='allele2_symbol',
+    #         allele3='allele3_symbol'
+    #     )
+    #     self.roundtrip(gt)
+
 #
 # class TestGenotypeSubjectConstructor(TestCase):
 #
@@ -347,7 +363,7 @@ class TestAllelesTable(TestCase):
 #         )
 #
 #         self.assertIs(subject.genotypes_table, gt)
-#
+
 #
 # class TestGenotypeSubjectRoundtrip(TestCase):
 #     """Simple roundtrip test for GenotypeSubject."""
