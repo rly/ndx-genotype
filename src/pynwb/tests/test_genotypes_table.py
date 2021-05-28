@@ -148,32 +148,32 @@ class TestGenotypesTable(TestCase):
         self.assertEqual(nwbfile.external_resources.resources.data, [('locus_resource_name',  'locus_resource_uri')])
 
 
-    # def test_add_minimal_with_allele_index(self):
-    #     """Test that the constructor for GenotypesTable sets values as expected."""
-    #     gt = self.set_up_genotypes_table({})
-    #     allele1_ind = gt.add_allele(symbol='Vip-IRES-Cre')
-    #     allele2_ind = gt.add_allele(symbol='wt')
-    #     gt.add_genotype(
-    #         locus='Vip',
-    #         allele1=allele1_ind,
-    #         allele2=allele2_ind,
-    #     )
-    #     self.assertEqual(gt[:, 'locus'], ['Vip'])
-    #     exp = pd.DataFrame({'symbol': ['Vip-IRES-Cre']}, index=pd.Index(name='id', data=[0]))
-    #     pd.testing.assert_frame_equal(gt[:, 'allele1'], exp)  # TODO requires HDMF #579
-    #     exp = pd.DataFrame({'symbol': ['wt']}, index=pd.Index(name='id', data=[1]))
-    #     pd.testing.assert_frame_equal(gt[:, 'allele2'], exp)
-#
-#     def test_add_minimal_with_allele_symbol(self):
-#         """Test that the constructor for GenotypesTable sets values as expected."""
-#         gt = self.set_up_genotypes_table({})
-#         gt.add_allele(symbol='Vip-IRES-Cre')  # TODO warn if there is no external resource / identifier
-#         gt.add_allele(symbol='wt')
-#         gt.add_genotype(
-#             locus='Vip',  # TODO warn if there is no external resource / identifier
-#             allele1='Vip-IRES-Cre',
-#             allele2='wt',
-#         )
+    def test_add_minimal_with_allele_index(self):
+        """Test that the constructor for GenotypesTable sets values as expected."""
+        gt = self.set_up_genotypes_table({})
+        allele1_ind = gt.add_allele(symbol='Vip-IRES-Cre')
+        allele2_ind = gt.add_allele(symbol='wt')
+        gt.add_genotype(
+            locus='Vip',
+            allele1='Vip-IRES-Cre',
+            allele2='wt',
+        )
+        self.assertEqual(gt[:, 'locus'], ['Vip'])
+        exp = pd.DataFrame({'symbol': [['Vip-IRES-Cre']]}, index=pd.Index(name='id', data=[0]))
+        pd.testing.assert_frame_equal(gt[:, 'allele1'], exp)  # TODO requires HDMF #579
+        # exp = pd.DataFrame({'symbol': ['wt']}, index=pd.Index(name='id', data=[1]))
+        # pd.testing.assert_frame_equal(gt[:, 'allele2'], exp)
+
+    def test_add_minimal_with_allele_symbol(self):
+        """Test that the constructor for GenotypesTable sets values as expected."""
+        gt = self.set_up_genotypes_table({})
+        gt.add_allele(symbol='Vip-IRES-Cre')  # TODO warn if there is no external resource / identifier
+        gt.add_allele(symbol='wt')
+        gt.add_genotype(
+            locus='Vip',  # TODO warn if there is no external resource / identifier
+            allele1='Vip-IRES-Cre',
+            allele2='wt',
+        )
 #         self.assertEqual(gt[:, 'locus'], ['Vip'])
 #         exp = pd.DataFrame({'symbol': ['Vip-IRES-Cre']}, index=pd.Index(name='id', data=[0]))
 #         pd.testing.assert_frame_equal(gt[:, 'allele1'], exp)  # TODO requires HDMF #579
