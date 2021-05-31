@@ -71,10 +71,11 @@ groups:
     dtype: text
     doc: 'A DNA sequence at which RNA polymerase binds and initiates transcription.'
     quantity: '?'
-  - name: flanked_sequence
+  - name: recombinase_recognition_site
     neurodata_type_inc: VectorData
     dtype: text
-    doc: 'Region of DNA flanked by recombinase recognition sites.'
+    doc: 'Site where recombination occurs mediated by a specific recombinase,
+          leading to integration, deletion or inversion of a DNA fragment.'
     quantity: '?'
 - neurodata_type_def: GenotypeSubject
   neurodata_type_inc: Subject

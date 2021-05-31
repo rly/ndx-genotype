@@ -161,8 +161,8 @@ class TestGenotypesTable(TestCase):
         self.assertEqual(gt[:, 'locus'], ['Vip'])
         exp = pd.DataFrame({'symbol': [['Vip-IRES-Cre']]}, index=pd.Index(name='id', data=[0]))
         pd.testing.assert_frame_equal(gt[:, 'allele1'], exp)  # TODO requires HDMF #579
-        # exp = pd.DataFrame({'symbol': ['wt']}, index=pd.Index(name='id', data=[1]))
-        # pd.testing.assert_frame_equal(gt[:, 'allele2'], exp)
+        exp = pd.DataFrame({'symbol': [['wt']]}, index=pd.Index(name='id', data=[1]))
+        pd.testing.assert_frame_equal(gt[:, 'allele2'], exp)
 
     def test_add_minimal_with_allele_symbol(self):
         """Test that the constructor for GenotypesTable sets values as expected."""
@@ -174,74 +174,98 @@ class TestGenotypesTable(TestCase):
             allele1='Vip-IRES-Cre',
             allele2='wt',
         )
-#         self.assertEqual(gt[:, 'locus'], ['Vip'])
-#         exp = pd.DataFrame({'symbol': ['Vip-IRES-Cre']}, index=pd.Index(name='id', data=[0]))
-#         pd.testing.assert_frame_equal(gt[:, 'allele1'], exp)  # TODO requires HDMF #579
-#         exp = pd.DataFrame({'symbol': ['wt']}, index=pd.Index(name='id', data=[1]))
-#         pd.testing.assert_frame_equal(gt[:, 'allele2'], exp)
+        self.assertEqual(gt[:, 'locus'], ['Vip'])
+        exp = pd.DataFrame({'symbol': [['Vip-IRES-Cre']]}, index=pd.Index(name='id', data=[0]))
+        pd.testing.assert_frame_equal(gt[:, 'allele1'], exp)  # TODO requires HDMF #579
+        exp = pd.DataFrame({'symbol': [['wt']]}, index=pd.Index(name='id', data=[1]))
+        pd.testing.assert_frame_equal(gt[:, 'allele2'], exp)
 
-#     def test_add_typical(self):
-#         gt = self.set_up_genotypes_table(dict(process='PCR'))
-#         gt.add_allele(
-#             symbol='Vip-IRES-Cre'
-#         )
-#         gt.add_allele(symbol='wt')
-#         gt.add_allele(symbol='Ai14(RCL-tdT)')
-#         gt.add_genotype(
-#             locus='Vip',
-#             allele1='Vip-IRES-Cre',
-#             allele2='wt',
-#         )
-#         gt.add_genotype(
-#             locus='ROSA26',
-#             allele1='Ai14(RCL-tdT)',
-#             allele2='wt',
-#         )
-#         self.assertEqual(gt[:, 'locus'], ['Vip', 'ROSA26'])
-#         exp = pd.DataFrame({'symbol': ['Vip-IRES-Cre', 'Ai14(RCL-tdT)']}, index=pd.Index(name='id', data=[0, 2]))
-#         pd.testing.assert_frame_equal(gt[:, 'allele1'], exp)  # TODO requires HDMF #579
-#         exp = pd.DataFrame({'symbol': ['wt', 'wt']}, index=pd.Index(name='id', data=[1, 1]))
-#         pd.testing.assert_frame_equal(gt[:, 'allele2'], exp)
-#
-#         # TODO add external resources
-#
-#     def test_add_full(self):
-#         gt = self.set_up_genotypes_table(dict(
-#             process='PCR',
-#             process_url='https://dx.doi.org/10.17504/protocols.io.yjifuke',
-#             assembly='GRCm38.p6',
-#             annotation='NCBI Mus musculus Annotation Release 108',
-#         ))
-#         gt.add_allele(symbol='Vip-IRES-Cre')
-#         gt.add_allele(symbol='wt')
-#         gt.add_allele(symbol='Ai14(RCL-tdT)')
-#         gt.add_allele(symbol='allele3')
-#         gt.add_genotype(
-#             locus='Vip',
-#             allele1='Vip-IRES-Cre',
-#             allele2='wt',
-#             allele3='wt',
-#             # NOTE if allele3 is provided for any genotype, then a non-None allele3 value must be provided for all
-#             # genotypes...
-#         )
-#         gt.add_genotype(
-#             locus='ROSA26',
-#             allele1='Ai14(RCL-tdT)',
-#             allele2='wt',
-#             allele3='allele3',
-#         )
-#
-#         self.assertEqual(gt[:, 'locus'], ['Vip', 'ROSA26'])
-#         exp = pd.DataFrame({'symbol': ['Vip-IRES-Cre', 'Ai14(RCL-tdT)']}, index=pd.Index(name='id', data=[0, 2]))
-#         pd.testing.assert_frame_equal(gt[:, 'allele1'], exp)  # TODO requires HDMF #579
-#         exp = pd.DataFrame({'symbol': ['wt', 'wt']}, index=pd.Index(name='id', data=[1, 1]))
-#         pd.testing.assert_frame_equal(gt[:, 'allele2'], exp)
-#         exp = pd.DataFrame({'symbol': ['wt', 'allele3']}, index=pd.Index(name='id', data=[1, 3]))
-#         pd.testing.assert_frame_equal(gt[:, 'allele3'], exp)
-#
-#         # TODO add external resources
-#
-#
+    def test_add_typical(self):
+        gt = self.set_up_genotypes_table(dict(process='PCR'))
+        nwbfile = gt.get_ancestor(data_type='GenotypeNWBFile')
+        gt.add_allele(
+            symbol='Vip-IRES-Cre'
+        )
+        gt.add_allele(symbol='wt')
+        gt.add_allele(symbol='Ai14(RCL-tdT)')
+        gt.add_genotype(
+            locus='Vip',
+            allele1='Vip-IRES-Cre',
+            allele2='wt',
+            locus_resource_name='locus_resource_name',
+            locus_resource_uri='locus_resource_uri',
+            locus_entity_id='locus_entity_id_1',
+            locus_entity_uri='locus_entity_uri_1')
+        gt.add_genotype(
+            locus='ROSA26',
+            allele1='Ai14(RCL-tdT)',
+            allele2='wt',
+            locus_resource_name='locus_resource_name',
+            locus_resource_uri='locus_resource_uri',
+            locus_entity_id='locus_entity_id_2',
+            locus_entity_uri='locus_entity_uri_2')
+
+        self.assertEqual(gt[:, 'locus'], ['Vip', 'ROSA26'])
+        exp = pd.DataFrame({'symbol': ['Vip-IRES-Cre', 'Ai14(RCL-tdT)']}, index=pd.Index(name='id', data=[0, 2]))
+        pd.testing.assert_frame_equal(gt[:, 'allele1'], exp)  # TODO requires HDMF #579
+        exp = pd.DataFrame({'symbol': [['wt'], ['wt']]}, index=pd.Index(name='id', data=[1, 1]))
+        pd.testing.assert_frame_equal(gt[:, 'allele2'], exp)
+
+        self.assertEqual(nwbfile.external_resources.keys.data, [('Vip',), ('ROSA26',)])
+        self.assertEqual(nwbfile.external_resources.entities.data, [(0, 0, 'locus_entity_id_1', 'locus_entity_uri_1'),
+                                                                    (1, 0, 'locus_entity_id_2', 'locus_entity_uri_2')])
+        self.assertEqual(nwbfile.external_resources.resources.data, [('locus_resource_name',  'locus_resource_uri')])
+
+    def test_add_full(self):
+        gt = self.set_up_genotypes_table(dict(
+            process='PCR',
+            process_url='https://dx.doi.org/10.17504/protocols.io.yjifuke',
+            assembly='GRCm38.p6',
+            annotation='NCBI Mus musculus Annotation Release 108',
+        ))
+        gt.add_allele(symbol='Vip-IRES-Cre')
+        gt.add_allele(symbol='wt')
+        gt.add_allele(symbol='Ai14(RCL-tdT)')
+        gt.add_allele(symbol='allele3')
+        # gt.add_genotype(
+        #     locus='ROSA26',
+        #     allele1='Ai14(RCL-tdT)',
+        #     allele2='wt',
+        #     locus_resource_name='locus_resource_name',
+        #     locus_resource_uri='locus_resource_uri',
+        #     locus_entity_id='locus_entity_id_2',
+        #     locus_entity_uri='locus_entity_uri_2')
+        gt.add_genotype(
+            locus='Vip',
+            allele1='Vip-IRES-Cre',
+            allele2='wt',
+            allele3='wt',
+            locus_resource_name='locus_resource_name',
+            locus_resource_uri='locus_resource_uri',
+            locus_entity_id='locus_entity_id_1',
+            locus_entity_uri='locus_entity_uri_1')
+            # NOTE if allele3 is provided for any genotype, then a non-None allele3 value must be provided for all
+            # genotypes...
+
+        gt.add_genotype(
+            locus='ROSA26',
+            allele1='Ai14(RCL-tdT)',
+            allele2='wt',
+            allele3='allele3'
+        )
+        print(gt.get_allele_index('allele3'))
+
+        self.assertEqual(gt[:, 'locus'], ['Vip', 'ROSA26'])
+        exp = pd.DataFrame({'symbol': ['Vip-IRES-Cre', 'Ai14(RCL-tdT)']}, index=pd.Index(name='id', data=[0, 2]))
+        pd.testing.assert_frame_equal(gt[:, 'allele1'], exp)  # TODO requires HDMF #579
+        exp = pd.DataFrame({'symbol': [['wt'], ['wt']]}, index=pd.Index(name='id', data=[1, 1]))
+        pd.testing.assert_frame_equal(gt[:, 'allele2'], exp)
+        exp = pd.DataFrame({'symbol': ['wt', 'allele3']}, index=pd.Index(name='id', data=[1, 3]))
+        pd.testing.assert_frame_equal(gt[:, 'allele3'], exp)
+
+        # TODO add external resources
+
+
 # class TestGenotypesTableRoundtrip(TestCase):
 #     """Simple roundtrip test for GenotypesTable."""
 #

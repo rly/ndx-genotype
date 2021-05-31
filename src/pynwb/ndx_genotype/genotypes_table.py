@@ -14,25 +14,27 @@ class AllelesTable(DynamicTable):
     __columns__ = (
         {'name': 'symbol',
          'description': 'Symbol/name of the allele.',
-         'required': True},
-        {'name': 'generation_method',
-         'description': '...',
-         'required': False},
+         'required': True,},
         {'name': 'recombinase',
          'description': ('An enzyme that mediates a recombination exchange'
                          'reaction between two DNA templates, each containing a specific recognition site.'),
-         'required': False},
+         'required': False,
+         'index': True},
         {'name': 'reporter',
          'description': ('Sequence that forms all or part of the protein product encoded by a'
                          'transgenic locus or modified endogenous locus and that encodes an enzyme'
                          'whose activity can be used to detect the presence of that protein product.'),
-         'required': False},
+         'required': False,
+         'index': True},
         {'name': 'promoter',
          'description': ('A DNA sequence at which RNA polymerase binds and initiates transcription.'),
-         'required': False},
-        {'name': 'flanked_sequence',
-         'description': ('Region of DNA flanked by recombinase recognition sites.'),
-         'required': False}
+         'required': False,
+         'index': True},
+        {'name': 'recombinase_recognition_site',
+         'description': ('Site where recombination occurs mediated by a specific recombinase, leading to'
+                         'integration, deletion or inversion of a DNA fragment.'),
+         'required': False,
+         'index': True}
 
     )
 
@@ -58,10 +60,6 @@ class AllelesTable(DynamicTable):
             {'name': 'symbol',
             'type': str,
             'doc': ('Symbol/name of the allele, e.g., Rorb-IRES-Cre. This must be unique in the table.')},
-            # {'name': 'generation_method',
-            # 'type': str,
-            # 'doc': ('...'),
-            # 'default': None},
             {'name': 'recombinase', # change to make raggid
             'type': str,
             'doc': ('An enzyme that mediates a recombination exchange'
@@ -77,9 +75,10 @@ class AllelesTable(DynamicTable):
             'type': str,
             'doc': ('A DNA sequence at which RNA polymerase binds and initiates transcription.'),
             'default': None},
-            {'name': 'flanked_sequence', # Will change
+            {'name': 'recombinase_recognition_site',
             'type': str,
-            'doc': ('region of DNA flanked by recombinase recognition sites.'),
+            'doc': ('Site where recombination occurs mediated by a specific recombinase, leading to'
+                    'integration, deletion or inversion of a DNA fragment.'),
             'default': None},
             allow_extra=True,
             allow_positional=AllowPositional.ERROR)
@@ -228,6 +227,15 @@ class GenotypesTable(DynamicTable):
         self.alleles_table = getargs('alleles_table', kwargs)
         if self.alleles_table is None:
             self.alleles_table = AllelesTable()
+        elif not isinstance(self.alleles_table, AllelesTable):
+            raise ValueError("")
+        if self['allele1'].table is None:
+            self['allele1'].table = self.alleles_table
+        if self['allele2'].table is None:
+            self['allele2'].table = self.alleles_table
+        if 'allele3' in self and self['allele3'].table is None:
+            self['allele3'].table = self.alleles_table
+
 
     @docval(
         {
@@ -282,7 +290,8 @@ class GenotypesTable(DynamicTable):
     )
     def add_genotype(self, **kwargs):
         """Add a genotype to this table."""
-
+        
+        locus = getargs('locus', kwargs)
         # if the allele symbol is passed in, get the index of the allele and use that in add_row
         allele1 = getargs('allele1', kwargs)
         if isinstance(allele1, str):
@@ -306,21 +315,14 @@ class GenotypesTable(DynamicTable):
                                  "using GenotypeTable.add_allele()." % allele1)
             kwargs['allele3'] = allele3_ind
 
-        # if allele1 is an int, then
         locus_resource_name = popargs('locus_resource_name', kwargs)
         locus_resource_uri = popargs('locus_resource_uri', kwargs)
         locus_entity_id = popargs('locus_entity_id', kwargs)
         locus_entity_uri = popargs('locus_entity_uri', kwargs)
         super().add_row(**kwargs)
 
-        if self['allele1'].table is None:
-            self['allele1'].table = self.alleles_table
-        if self['allele2'].table is None:
-            self['allele2'].table = self.alleles_table
-        if 'allele3' in self and self['allele3'].table is None:
-            self['allele3'].table = self.alleles_table
 
-        locus = getargs('locus', kwargs)
+
 
         nwbfile = self.get_ancestor(data_type='GenotypeNWBFile')  # TODO changeme to NWBFile after migration
         if (locus_resource_name is not None and locus_resource_uri is not None and locus_entity_id is not None and
@@ -337,7 +339,7 @@ class GenotypesTable(DynamicTable):
 
     @docval(*get_docval(AllelesTable.add_allele))
     def add_allele(self, **kwargs):
-        return self.alleles_table.add_row(**kwargs)
+        return self.alleles_table.add_allele(**kwargs)
         # return call_docval_func(self.alleles_table.add_allele, kwargs)
 
     @docval(*get_docval(AllelesTable.get_allele_index))
