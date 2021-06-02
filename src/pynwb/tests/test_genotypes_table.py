@@ -239,11 +239,11 @@ class TestGenotypesTable(TestCase):
             locus='Vip',
             allele1='Vip-IRES-Cre',
             allele2='wt',
-            allele3='wt',
-            locus_resource_name='locus_resource_name',
-            locus_resource_uri='locus_resource_uri',
-            locus_entity_id='locus_entity_id_1',
-            locus_entity_uri='locus_entity_uri_1')
+            allele3='wt')
+            # locus_resource_name='locus_resource_name',
+            # locus_resource_uri='locus_resource_uri',
+            # locus_entity_id='locus_entity_id_1',
+            # locus_entity_uri='locus_entity_uri_1')
             # NOTE if allele3 is provided for any genotype, then a non-None allele3 value must be provided for all
             # genotypes...
 
@@ -266,173 +266,180 @@ class TestGenotypesTable(TestCase):
         # TODO add external resources
 
 
-# class TestGenotypesTableRoundtrip(TestCase):
-#     """Simple roundtrip test for GenotypesTable."""
-#
-#     def setUp(self):
-#         self.path = 'test.nwb'
-#
-#     def tearDown(self):
-#         remove_test_file(self.path)
-#
-#     def set_up_genotypes_table(self, kwargs):
-#         self.nwbfile = GenotypeNWBFile(
-#             session_description='session_description',
-#             identifier='identifier',
-#             session_start_time=datetime.datetime.now(datetime.timezone.utc)
-#         )
-#         self.nwbfile.subject = GenotypeSubject(
-#             subject_id='3',
-#             genotype='Rorb-IRES2-Cre/wt',
-#         )
-#         gt = GenotypesTable(**kwargs)
-#         # GenotypesTable must be descendant of NWBFile before add_genotype works
-#         self.nwbfile.subject.genotypes_table = gt
-#         return gt
-#
-#     def roundtrip(self, genotypes_table):
-#         """
-#         Add a GenotypeTable to an NWBFile, write it to file, read the file, and test that the GenotypeTable from the
-#         file matches the original GenotypeTable.
-#         """
-#         with NWBHDF5IO(self.path, mode='w') as io:
-#             io.write(self.nwbfile)
-#
-#         with NWBHDF5IO(self.path, mode='r', load_namespaces=True) as io:
-#             read_nwbfile = io.read()
-#             self.assertContainerEqual(genotypes_table, read_nwbfile.subject.genotypes_table)
-#             errors = pynwb_validate(io, namespace='ndx-genotype')
-#             if errors:
-#                 for err in errors:
-#                     raise Exception(err)
-#
-#     def test_roundtrip_minimal(self):
-#         # NOTE: writing an empty table is not allowed and raises an error
-#         gt = self.set_up_genotypes_table(dict())
-#         gt.add_allele('Rorb-IRES2-Cre')
-#         gt.add_allele('wt')
-#         gt.add_allele('None') #why is this required?
-#         gt.add_genotype(
-#             locus='Rorb',
-#             allele1='Rorb-IRES2-Cre',
-#             allele2='wt',
-#             allele3='None'
-#         )
-#         self.roundtrip(gt)
+class TestGenotypesTableRoundtrip(TestCase):
+    """Simple roundtrip test for GenotypesTable."""
 
-    # def test_roundtrip_typical(self):
-    #     gt = self.set_up_genotypes_table(dict(
-    #         process='PCR',
-    #     ))
-    #     gt.add_allele('Rorb-IRES2-Cre')
-    #     gt.add_allele('wt')
-    #     gt.add_allele('Rorb-allele1_symbol-Cre')
-    #     gt.add_allele('allele2_symbol')
-    #     gt.add_genotype(
-    #         locus='Rorb',
-    #         allele1='Rorb-IRES2-Cre',
-    #         allele2='wt'
-    #     )
-    #     gt.add_genotype(
-    #         locus='locus_symbol',
-    #         allele1='Rorb-allele1_symbol-Cre',
-    #         allele2='allele2_symbol'
-    #     )
-    #     self.roundtrip(gt)
-    #
-    # def test_roundtrip_full(self):
-    #     gt = self.set_up_genotypes_table(dict(
-    #         process='PCR',
-    #         process_url='https://dx.doi.org/10.17504/protocols.io.yjifuke',
-    #         assembly='GRCm38.p6',
-    #         annotation='NCBI Mus musculus Annotation Release 108',
-    #     ))
-    #     gt.add_allele('Rorb-IRES2-Cre')
-    #     gt.add_allele('wt')
-    #     gt.add_allele('allele1_symbol')
-    #     gt.add_allele('allele2_symbol')
-    #     gt.add_allele('allele3_symbol')
-    #
-    #     gt.add_genotype(
-    #         locus='Rorb2',
-    #         allele1='Rorb-IRES2-Cre',
-    #         allele2='wt',
-    #         allele3='None'
-    #     )
-    #     gt.add_genotype(
-    #         locus='locus_symbol',
-    #         allele1='allele1_symbol',
-    #         allele2='allele2_symbol',
-    #         allele3='allele3_symbol'
-    #     )
-    #     self.roundtrip(gt)
+    def setUp(self):
+        self.path = 'test.nwb'
 
-#
-# class TestGenotypeSubjectConstructor(TestCase):
-#
-#     def test_constructor(self):
-#         """Test that the constructor for GenotypeSubject sets values as expected."""
-#         gt = GenotypesTable()
-#
-#         subject = GenotypeSubject(
-#             age='P50D',
-#             description='Mouse',
-#             genotype='Rorb-IRES2-Cre/wt',
-#             genotypes_table=gt,
-#             sex='M',
-#             species='Mus musculus',
-#             subject_id='3',
-#             weight='2 lbs',
-#             date_of_birth=datetime.datetime(2017, 5, 1, 12, tzinfo=tzlocal())
-#         )
-#
-#         self.assertIs(subject.genotypes_table, gt)
+    def tearDown(self):
+        remove_test_file(self.path)
 
+    def set_up_genotypes_table(self, kwargs):
+        self.nwbfile = GenotypeNWBFile(
+            session_description='session_description',
+            identifier='identifier',
+            session_start_time=datetime.datetime.now(datetime.timezone.utc)
+        )
+        self.nwbfile.subject = GenotypeSubject(
+            subject_id='3',
+            genotype='Rorb-IRES2-Cre/wt',
+        )
+        gt = GenotypesTable(**kwargs)
+        # GenotypesTable must be descendant of NWBFile before add_genotype works
+        self.nwbfile.subject.genotypes_table = gt
+        return gt
 #
-# class TestGenotypeSubjectRoundtrip(TestCase):
-#     """Simple roundtrip test for GenotypeSubject."""
-#
-#     def setUp(self):
-#         self.path = 'test.nwb'
-#
-#     def tearDown(self):
-#         remove_test_file(self.path)
-#
-#     def test_roundtrip(self):
-#         """
-#         Add a GenotypeSubject with a GenotypesTable to an NWBFile, write it to file, read the file, and test that the
-#         GenotypeSubject from the file matches the original GenotypeSubject.
-#         """
-#         self.nwbfile = GenotypeNWBFile(
-#             session_description='session_description',
-#             identifier='identifier',
-#             session_start_time=datetime.datetime.now(datetime.timezone.utc)
-#         )
-#         self.nwbfile.subject = GenotypeSubject(
-#             age='P50D',
-#             description='Mouse',
-#             genotype='Rorb-IRES2-Cre/wt',
-#             genotypes_table=GenotypesTable(),
-#             sex='M',
-#             species='Mus musculus',
-#             subject_id='3',
-#             weight='2 lbs',
-#             date_of_birth=datetime.datetime(2017, 5, 1, 12, tzinfo=tzlocal())
-#         )
-#         self.nwbfile.subject.genotypes_table.add_genotype(
-#             locus_symbol='Rorb',
-#             locus_crid=[('MGI', '1343464')],
-#             allele1_symbol='Rorb-IRES2-Cre',
-#             allele2_symbol='wt',
-#         )
-#
-#         with NWBHDF5IO(self.path, mode='w') as io:
-#             io.write(self.nwbfile)
-#
-#         with NWBHDF5IO(self.path, mode='r', load_namespaces=True) as io:
-#             read_nwbfile = io.read()
-#             self.assertContainerEqual(self.nwbfile.subject, read_nwbfile.subject)
-#             errors = pynwb_validate(io, namespace='ndx-genotype')
-#             if errors:
-#                 for err in errors:
-#                     raise Exception(err)
+    def roundtrip(self, genotypes_table):
+        """
+        Add a GenotypeTable to an NWBFile, write it to file, read the file, and test that the GenotypeTable from the
+        file matches the original GenotypeTable.
+        """
+        with NWBHDF5IO(self.path, mode='w') as io:
+            io.write(self.nwbfile)
+
+        with NWBHDF5IO(self.path, mode='r', load_namespaces=True) as io:
+            read_nwbfile = io.read()
+            self.assertContainerEqual(genotypes_table, read_nwbfile.subject.genotypes_table)
+            errors = pynwb_validate(io, namespace='ndx-genotype')
+            if errors:
+                for err in errors:
+                    raise Exception(err)
+
+    def test_roundtrip_minimal(self):
+        # NOTE: writing an empty table is not allowed and raises an error
+        gt = self.set_up_genotypes_table(dict())
+        gt.add_allele('Rorb-IRES2-Cre')
+        gt.add_allele('wt')
+        gt.add_allele('None') #why is this required?
+        gt.add_genotype(
+            locus='Rorb',
+            allele1='Rorb-IRES2-Cre',
+            allele2='wt',
+            allele3='None'
+        )
+        self.roundtrip(gt)
+
+    def test_roundtrip_typical(self):
+        gt = self.set_up_genotypes_table(dict(
+            process='PCR',
+        ))
+        gt.add_allele('Rorb-IRES2-Cre')
+        gt.add_allele('wt')
+        gt.add_allele('Rorb-allele1_symbol-Cre')
+        gt.add_allele('allele2_symbol')
+        gt.add_allele('None')
+        gt.add_genotype(
+            locus='Rorb',
+            allele1='Rorb-IRES2-Cre',
+            allele2='wt',
+            allele3='None'
+        )
+        gt.add_genotype(
+            locus='locus_symbol',
+            allele1='Rorb-allele1_symbol-Cre',
+            allele2='allele2_symbol',
+            allele3='None'
+        )
+        self.roundtrip(gt)
+
+    def test_roundtrip_full(self):
+        gt = self.set_up_genotypes_table(dict(
+            process='PCR',
+            process_url='https://dx.doi.org/10.17504/protocols.io.yjifuke',
+            assembly='GRCm38.p6',
+            annotation='NCBI Mus musculus Annotation Release 108',
+        ))
+        gt.add_allele('Rorb-IRES2-Cre')
+        gt.add_allele('wt')
+        gt.add_allele('allele1_symbol')
+        gt.add_allele('allele2_symbol')
+        gt.add_allele('allele3_symbol')
+        gt.add_allele('None')
+
+        gt.add_genotype(
+            locus='Rorb2',
+            allele1='Rorb-IRES2-Cre',
+            allele2='wt',
+            allele3='None'
+        )
+        gt.add_genotype(
+            locus='locus_symbol',
+            allele1='allele1_symbol',
+            allele2='allele2_symbol',
+            allele3='allele3_symbol'
+        )
+        self.roundtrip(gt)
+
+
+class TestGenotypeSubjectConstructor(TestCase):
+
+    def test_constructor(self):
+        """Test that the constructor for GenotypeSubject sets values as expected."""
+        gt = GenotypesTable()
+
+        subject = GenotypeSubject(
+            age='P50D',
+            description='Mouse',
+            genotype='Rorb-IRES2-Cre/wt',
+            genotypes_table=gt,
+            sex='M',
+            species='Mus musculus',
+            subject_id='3',
+            weight='2 lbs',
+            date_of_birth=datetime.datetime(2017, 5, 1, 12, tzinfo=tzlocal())
+        )
+
+        self.assertIs(subject.genotypes_table, gt)
+
+
+class TestGenotypeSubjectRoundtrip(TestCase):
+    """Simple roundtrip test for GenotypeSubject."""
+
+    def setUp(self):
+        self.path = 'test.nwb'
+
+    def tearDown(self):
+        remove_test_file(self.path)
+
+    def test_roundtrip(self):
+        """
+        Add a GenotypeSubject with a GenotypesTable to an NWBFile, write it to file, read the file, and test that the
+        GenotypeSubject from the file matches the original GenotypeSubject.
+        """
+        self.nwbfile = GenotypeNWBFile(
+            session_description='session_description',
+            identifier='identifier',
+            session_start_time=datetime.datetime.now(datetime.timezone.utc)
+        )
+        self.nwbfile.subject = GenotypeSubject(
+            age='P50D',
+            description='Mouse',
+            genotype='Rorb-IRES2-Cre/wt',
+            genotypes_table=GenotypesTable(),
+            sex='M',
+            species='Mus musculus',
+            subject_id='3',
+            weight='2 lbs',
+            date_of_birth=datetime.datetime(2017, 5, 1, 12, tzinfo=tzlocal())
+        )
+        self.nwbfile.subject.genotypes_table.add_allele('Rorb-IRES2-Cre')
+        self.nwbfile.subject.genotypes_table.add_allele('wt')
+        self.nwbfile.subject.genotypes_table.add_allele('None')
+        self.nwbfile.subject.genotypes_table.add_genotype(
+            locus='Rorb',
+            allele1='Rorb-IRES2-Cre',
+            allele2='wt',
+            allele3='None'
+        )
+
+        with NWBHDF5IO(self.path, mode='w') as io:
+            io.write(self.nwbfile)
+
+        with NWBHDF5IO(self.path, mode='r', load_namespaces=True) as io:
+            read_nwbfile = io.read()
+            self.assertContainerEqual(self.nwbfile.subject, read_nwbfile.subject)
+            errors = pynwb_validate(io, namespace='ndx-genotype')
+            if errors:
+                for err in errors:
+                    raise Exception(err)

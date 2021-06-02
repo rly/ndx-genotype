@@ -211,9 +211,8 @@ class GenotypesTable(DynamicTable):
         },
         {
             'name': 'alleles_table',
-            'type': str,
-            'doc': ('Description of the annotation of the reference genome, '
-                    'e.g., NCBI Mus musculus Annotation Release 108.'),
+            'type': AllelesTable,
+            'doc': 'The table of alleles for a genotype.',
             'default': None,
         },
         allow_positional=AllowPositional.ERROR,
@@ -233,7 +232,7 @@ class GenotypesTable(DynamicTable):
             self['allele1'].table = self.alleles_table
         if self['allele2'].table is None:
             self['allele2'].table = self.alleles_table
-        if 'allele3' in self and self['allele3'].table is None:
+        if self.allele3 is not None and self['allele3'].table is None:
             self['allele3'].table = self.alleles_table
 
 
@@ -290,7 +289,7 @@ class GenotypesTable(DynamicTable):
     )
     def add_genotype(self, **kwargs):
         """Add a genotype to this table."""
-        
+
         locus = getargs('locus', kwargs)
         # if the allele symbol is passed in, get the index of the allele and use that in add_row
         allele1 = getargs('allele1', kwargs)
@@ -319,9 +318,10 @@ class GenotypesTable(DynamicTable):
         locus_resource_uri = popargs('locus_resource_uri', kwargs)
         locus_entity_id = popargs('locus_entity_id', kwargs)
         locus_entity_uri = popargs('locus_entity_uri', kwargs)
-        super().add_row(**kwargs)
+        super().add_row(**kwargs) # Magic with allele3
 
-
+        if self.allele3 is not None and self['allele3'].table is None: #
+            self['allele3'].table = self.alleles_table
 
 
         nwbfile = self.get_ancestor(data_type='GenotypeNWBFile')  # TODO changeme to NWBFile after migration

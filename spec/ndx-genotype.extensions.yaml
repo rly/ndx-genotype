@@ -22,6 +22,12 @@ groups:
     doc: Description of the annotation of the reference genome, e.g., NCBI Mus musculus
       Annotation Release 108.
     required: false
+  - name: alleles_table
+    dtype:
+      target_type: AllelesTable
+      reftype: object
+    doc: The table of alleles for a genotype.
+    required: false
   datasets:
   - name: locus
     neurodata_type_inc: VectorData
@@ -48,11 +54,6 @@ groups:
     neurodata_type_inc: VectorData
     dtype: text
     doc: Symbol/name of the allele
-  - name: generation_method
-    neurodata_type_inc: VectorData
-    dtype: text
-    doc: '...'
-    quantity: '?'
   - name: recombinase
     neurodata_type_inc: VectorData
     dtype: text
