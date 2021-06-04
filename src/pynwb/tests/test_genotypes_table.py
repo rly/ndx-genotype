@@ -28,7 +28,7 @@ class TestAllelesTable(TestCase):
         self.assertIsInstance(at.symbol, VectorData)
         self.assertEqual(at.symbol.data, ['Vipr2-IRES2-Cre'])
 
-    def test_get_allele_index(self): #Todo: change assert to check for value
+    def test_get_allele_index(self):
         at = AllelesTable()
         at.add_allele(symbol='Vipr2-IRES2-Cre')
         index = at.get_allele_index(symbol='Vipr2-IRES2-Cre')
@@ -74,7 +74,7 @@ class TestAllelesTable(TestCase):
         self.assertEqual(nwbfile.external_resources.resources.data, [('resource_name',  'resource_uri')])
 
     def test_alleles_table_without_genotype_table_external_resources(self):
-        #TODO: This test checks the ValueError where if there is no GenotypeTable linked, then we can't add ER.
+        #This test checks the ValueError where if there is no GenotypeTable linked, then we can't add ER.
         key = 'key'
         resource_name = 'resource_name'
         resource_uri = 'resource_uri'
@@ -308,7 +308,7 @@ class TestGenotypesTableRoundtrip(TestCase):
         gt = self.set_up_genotypes_table(dict())
         gt.add_allele('Rorb-IRES2-Cre')
         gt.add_allele('wt')
-        gt.add_allele('None') 
+        gt.add_allele('None')
         gt.add_genotype(
             locus='Rorb',
             allele1='Rorb-IRES2-Cre',
