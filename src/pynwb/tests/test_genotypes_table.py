@@ -223,37 +223,32 @@ class TestGenotypesTable(TestCase):
             assembly='GRCm38.p6',
             annotation='NCBI Mus musculus Annotation Release 108',
         ))
+        nwbfile = gt.get_ancestor(data_type='GenotypeNWBFile')
         gt.add_allele(symbol='Vip-IRES-Cre')
         gt.add_allele(symbol='wt')
         gt.add_allele(symbol='Ai14(RCL-tdT)')
         gt.add_allele(symbol='allele3')
-        # gt.add_genotype(
-        #     locus='ROSA26',
-        #     allele1='Ai14(RCL-tdT)',
-        #     allele2='wt',
-        #     locus_resource_name='locus_resource_name',
-        #     locus_resource_uri='locus_resource_uri',
-        #     locus_entity_id='locus_entity_id_2',
-        #     locus_entity_uri='locus_entity_uri_2')
         gt.add_genotype(
             locus='Vip',
             allele1='Vip-IRES-Cre',
             allele2='wt',
-            allele3='wt')
-            # locus_resource_name='locus_resource_name',
-            # locus_resource_uri='locus_resource_uri',
-            # locus_entity_id='locus_entity_id_1',
-            # locus_entity_uri='locus_entity_uri_1')
-            # NOTE if allele3 is provided for any genotype, then a non-None allele3 value must be provided for all
-            # genotypes...
-
+            allele3='wt',
+            locus_resource_name='locus_resource_name',
+            locus_resource_uri='locus_resource_uri',
+            locus_entity_id='locus_entity_id_1',
+            locus_entity_uri='locus_entity_uri_1')
         gt.add_genotype(
             locus='ROSA26',
             allele1='Ai14(RCL-tdT)',
             allele2='wt',
-            allele3='allele3'
-        )
-        print(gt.get_allele_index('allele3'))
+            allele3='allele3',
+            locus_resource_name='locus_resource_name',
+            locus_resource_uri='locus_resource_uri',
+            locus_entity_id='locus_entity_id_2',
+            locus_entity_uri='locus_entity_uri_2')
+
+            # NOTE if allele3 is provided for any genotype, then a non-None allele3 value must be provided for all
+            # genotypes...
 
         self.assertEqual(gt[:, 'locus'], ['Vip', 'ROSA26'])
         exp = pd.DataFrame({'symbol': ['Vip-IRES-Cre', 'Ai14(RCL-tdT)']}, index=pd.Index(name='id', data=[0, 2]))
@@ -263,8 +258,10 @@ class TestGenotypesTable(TestCase):
         exp = pd.DataFrame({'symbol': ['wt', 'allele3']}, index=pd.Index(name='id', data=[1, 3]))
         pd.testing.assert_frame_equal(gt[:, 'allele3'], exp)
 
-        # TODO add external resources
-
+        self.assertEqual(nwbfile.external_resources.keys.data, [('Vip',), ('ROSA26',)])
+        self.assertEqual(nwbfile.external_resources.entities.data, [(0, 0, 'locus_entity_id_1', 'locus_entity_uri_1'),
+                                                                    (1, 0, 'locus_entity_id_2', 'locus_entity_uri_2')])
+        self.assertEqual(nwbfile.external_resources.resources.data, [('locus_resource_name',  'locus_resource_uri')])
 
 class TestGenotypesTableRoundtrip(TestCase):
     """Simple roundtrip test for GenotypesTable."""
@@ -311,7 +308,7 @@ class TestGenotypesTableRoundtrip(TestCase):
         gt = self.set_up_genotypes_table(dict())
         gt.add_allele('Rorb-IRES2-Cre')
         gt.add_allele('wt')
-        gt.add_allele('None') #why is this required?
+        gt.add_allele('None') 
         gt.add_genotype(
             locus='Rorb',
             allele1='Rorb-IRES2-Cre',

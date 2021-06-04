@@ -320,7 +320,7 @@ class GenotypesTable(DynamicTable):
         locus_entity_uri = popargs('locus_entity_uri', kwargs)
         super().add_row(**kwargs) # Magic with allele3
 
-        if self.allele3 is not None and self['allele3'].table is None: #
+        if self.allele3 is not None and self['allele3'].table is None: 
             self['allele3'].table = self.alleles_table
 
 
