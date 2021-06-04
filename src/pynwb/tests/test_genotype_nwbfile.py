@@ -95,7 +95,6 @@ class TestNWBFileRoundTrip(TestCase):
 
         with NWBHDF5IO(self.path, mode='w') as io:
             io.write(self.nwbfile)
-        breakpoint()
 
         with NWBHDF5IO(self.path, mode='r', load_namespaces=True) as io:
             read_nwbfile = io.read()
