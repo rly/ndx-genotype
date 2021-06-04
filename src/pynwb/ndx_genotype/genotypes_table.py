@@ -14,7 +14,7 @@ class AllelesTable(DynamicTable):
     __columns__ = (
         {'name': 'symbol',
          'description': 'Symbol/name of the allele.',
-         'required': True,},
+         'required': True},
         {'name': 'recombinase',
          'description': ('An enzyme that mediates a recombination exchange'
                          'reaction between two DNA templates, each containing a specific recognition site.'),
@@ -35,7 +35,6 @@ class AllelesTable(DynamicTable):
                          'integration, deletion or inversion of a DNA fragment.'),
          'required': False,
          'index': True}
-
     )
 
     @docval(
@@ -83,7 +82,7 @@ class AllelesTable(DynamicTable):
             allow_extra=True,
             allow_positional=AllowPositional.ERROR)
     def add_allele(self, **kwargs):
-        """Add an allele to this table."""
+        """Add an allele to this table. Return the row index of the new allele."""
         symbol = getargs('symbol', kwargs)
         if symbol in self.symbol:
             raise ValueError("Allele symbol '%s' already exists in AllelesTable." % symbol)
@@ -112,7 +111,7 @@ class AllelesTable(DynamicTable):
 
     @docval(
         *get_docval(ExternalResources.add_ref, 'field', 'key', 'resource_name',
-                    'resource_uri', 'entity_id', 'entity_uri')
+                    'resource_uri', 'entity_id', 'entity_uri')  # copy docval and change the docstring to be more specific to AllelesTable
     )
     def add_external_resource(self, **kwargs):
         field = kwargs['field']
@@ -122,7 +121,12 @@ class AllelesTable(DynamicTable):
         entity_id = kwargs['entity_id']
         entity_uri = kwargs['entity_uri']
 
-        nwbfile = self.get_ancestor(data_type='GenotypeNWBFile')
+        # assert that field is a column of the alleles table  # TODO test this
+        if field not in self.colnames:
+            msg = "%s is not a column of AllelesTable" % field
+            raise ValueError(msg)
+
+        nwbfile = self.get_ancestor(data_type='GenotypeNWBFile')  # TODO change me to NWBFile after merge with NWB core
         if nwbfile is None:
             msg = "AllelesTable must have a GenotypeNWBFile as an ancestor to associate with ExternalResources"
             raise ValueError(msg)
@@ -157,7 +161,7 @@ class GenotypesTable(DynamicTable):
          'description': 'Symbol/name of the locus.',
          'required': True},
         {'name': 'allele1',
-         'description': '...',
+         'description': '...',  # TODO fill in descriptions
          'table': True,
          'required': True},
         {'name': 'allele2',
@@ -212,7 +216,7 @@ class GenotypesTable(DynamicTable):
         {
             'name': 'alleles_table',
             'type': AllelesTable,
-            'doc': 'The table of alleles for a genotype.',
+            'doc': 'The table of alleles for a genotype. If not provided, an AllelesTable will be created.',
             'default': None,
         },
         allow_positional=AllowPositional.ERROR,
@@ -226,15 +230,12 @@ class GenotypesTable(DynamicTable):
         self.alleles_table = getargs('alleles_table', kwargs)
         if self.alleles_table is None:
             self.alleles_table = AllelesTable()
-        elif not isinstance(self.alleles_table, AllelesTable):
-            raise ValueError("")
         if self['allele1'].table is None:
             self['allele1'].table = self.alleles_table
         if self['allele2'].table is None:
             self['allele2'].table = self.alleles_table
         if self.allele3 is not None and self['allele3'].table is None:
             self['allele3'].table = self.alleles_table
-
 
     @docval(
         {
@@ -252,7 +253,7 @@ class GenotypesTable(DynamicTable):
         {
             'name': 'allele2',
             'type': (int, str),
-            'doc': ('...'),
+            'doc': ('...'),  # TODO fill in descriptions
         },
         {
             'name': 'allele3',
@@ -318,13 +319,14 @@ class GenotypesTable(DynamicTable):
         locus_resource_uri = popargs('locus_resource_uri', kwargs)
         locus_entity_id = popargs('locus_entity_id', kwargs)
         locus_entity_uri = popargs('locus_entity_uri', kwargs)
-        super().add_row(**kwargs) # Magic with allele3
+        super().add_row(**kwargs)  # Magic with allele3  # TODO update or remove comment
 
-        if self.allele3 is not None and self['allele3'].table is None: 
+        if self.allele3 is not None and self['allele3'].table is None:
             self['allele3'].table = self.alleles_table
 
-
         nwbfile = self.get_ancestor(data_type='GenotypeNWBFile')  # TODO changeme to NWBFile after migration
+
+        # TODO warn if no external resource information is provided
         if (locus_resource_name is not None and locus_resource_uri is not None and locus_entity_id is not None and
                 locus_entity_uri is not None):
             nwbfile.external_resources.add_ref(
