@@ -147,6 +147,25 @@ class TestGenotypesTable(TestCase):
         self.assertEqual(nwbfile.external_resources.entities.data, [(0, 0, 'locus_entity_id', 'locus_entity_uri')])
         self.assertEqual(nwbfile.external_resources.resources.data, [('locus_resource_name',  'locus_resource_uri')])
 
+    def test_external_resource_warning(self):
+        key = 'key'
+        resource_name = 'resource_name'
+        resource_uri = 'resource_uri'
+        entity_id = 'entity_id'
+        entity_uri = 'entity_uri'
+
+        gt = self.set_up_genotypes_table({})
+        nwbfile = gt.get_ancestor(data_type='GenotypeNWBFile')
+        allele1_ind = gt.add_allele(symbol='Vip-IRES-Cre')
+        allele2_ind = gt.add_allele(symbol='wt')
+        gt.add_genotype(locus='Vip',
+                        allele1='Vip-IRES-Cre',
+                        allele2='wt')
+        msg = "User did not provide ExternalResources parameters. No external resource was created."
+        with self.assertWarns(UserWarning, msg=msg):
+            gt.add_genotype(locus='Vip',
+                        allele1='Vip-IRES-Cre',
+                        allele2='wt')
 
     def test_add_minimal_with_allele_index(self):
         """Test that the constructor for GenotypesTable sets values as expected."""

@@ -5,6 +5,7 @@ from pynwb import register_class
 from pynwb.core import DynamicTable, DynamicTableRegion
 from hdmf.utils import docval, get_docval, getargs, popargs, call_docval_func, AllowPositional
 from hdmf.common import ExternalResources
+from hdmf.common.resources import Key
 
 
 @register_class('AllelesTable', 'ndx-genotype')
@@ -59,18 +60,18 @@ class AllelesTable(DynamicTable):
             {'name': 'symbol',
             'type': str,
             'doc': ('Symbol/name of the allele, e.g., Rorb-IRES-Cre. This must be unique in the table.')},
-            {'name': 'recombinase', # change to make raggid
+            {'name': 'recombinase',
             'type': str,
             'doc': ('An enzyme that mediates a recombination exchange'
                     'reaction between two DNA templates, each containing a specific recognition site.'),
             'default': None},
-            {'name': 'reporter', # change to make raggid
+            {'name': 'reporter',
             'type': str,
             'doc': ('Sequence that forms all or part of the protein product encoded by a'
                     'transgenic locus or modified endogenous locus and that encodes an enzyme'
                     'whose activity can be used to detect the presence of that protein product.'),
             'default': None},
-            {'name': 'promoter', # change to make raggid
+            {'name': 'promoter',
             'type': str,
             'doc': ('A DNA sequence at which RNA polymerase binds and initiates transcription.'),
             'default': None},
@@ -109,10 +110,15 @@ class AllelesTable(DynamicTable):
             warnings.warn("Multiple rows in alleles table contain symbol '%s'. Using the first match." % symbol)
         return index[0]
 
-    @docval(
-        *get_docval(ExternalResources.add_ref, 'field', 'key', 'resource_name',
-                    'resource_uri', 'entity_id', 'entity_uri')  # copy docval and change the docstring to be more specific to AllelesTable
-    )
+    @docval({'name': 'field', 'type': str, 'default': None,
+             'doc': ('the column in the AllelesTable for the external resource'
+                     'i.e symbol, recombinase, reporter, promoter, or recombinase_recognition_site')},
+            {'name': 'key', 'type': (str, Key), 'default': None,
+             'doc': 'the name of the entity'},
+            {'name': 'resource_name', 'type': str, 'doc': 'the name of the resource to be created', 'default': None},
+            {'name': 'resource_uri', 'type': str, 'doc': 'the uri of the resource to be created', 'default': None},
+            {'name': 'entity_id', 'type': str, 'doc': 'the identifier for the entity at the resource', 'default': None},
+            {'name': 'entity_uri', 'type': str, 'doc': 'the URI for the identifier at the resource', 'default': None})
     def add_external_resource(self, **kwargs):
         field = kwargs['field']
         key = kwargs['key']
@@ -122,9 +128,9 @@ class AllelesTable(DynamicTable):
         entity_uri = kwargs['entity_uri']
 
         # assert that field is a column of the alleles table  # TODO test this
-        if field not in self.colnames:
-            msg = "%s is not a column of AllelesTable" % field
-            raise ValueError(msg)
+        # if field not in self.colnames:
+        #     msg = "%s is not a column of AllelesTable" % field
+        #     raise ValueError(msg)
 
         nwbfile = self.get_ancestor(data_type='GenotypeNWBFile')  # TODO change me to NWBFile after merge with NWB core
         if nwbfile is None:
@@ -253,36 +259,40 @@ class GenotypesTable(DynamicTable):
         {
             'name': 'allele2',
             'type': (int, str),
-            'doc': ('...'),  # TODO fill in descriptions
+            'doc': ('The index of the second allele in the alleles table, or the symbol of the second allele. Providing '
+                    'the index is more efficient than providing the symbol, which requires a search through the '
+                    'alleles table.'),
         },
         {
             'name': 'allele3',
             'type': (int, str),
-            'doc': ('...'),
+            'doc': ('The index of the third allele in the alleles table, or the symbol of the third allele. Providing '
+                    'the index is more efficient than providing the symbol, which requires a search through the '
+                    'alleles table.'),
             'default': None,
         },
         {
             'name': 'locus_resource_name',
             'type': str,
-            'doc': '...',
+            'doc': 'The name of the locus external resource used for reference',
             'default': None,
         },
         {
             'name': 'locus_resource_uri',
             'type': str,
-            'doc': '...',
+            'doc': 'The URI of the locus external resource',
             'default': None,
         },
         {
             'name': 'locus_entity_id',
             'type': str,
-            'doc': '...',
+            'doc': 'The unique ID from the external resource for the locus',
             'default': None,
         },
         {
             'name': 'locus_entity_uri',
             'type': str,
-            'doc': '...',
+            'doc': 'The URI for the locus entity',
             'default': None,
         },
         allow_extra=True,
@@ -319,7 +329,7 @@ class GenotypesTable(DynamicTable):
         locus_resource_uri = popargs('locus_resource_uri', kwargs)
         locus_entity_id = popargs('locus_entity_id', kwargs)
         locus_entity_uri = popargs('locus_entity_uri', kwargs)
-        super().add_row(**kwargs)  # Magic with allele3  # TODO update or remove comment
+        super().add_row(**kwargs)
 
         if self.allele3 is not None and self['allele3'].table is None:
             self['allele3'].table = self.alleles_table
@@ -338,6 +348,8 @@ class GenotypesTable(DynamicTable):
                 entity_id=locus_entity_id,
                 entity_uri=locus_entity_uri,
             )
+        else:
+            warnings.warn("User did not provide ExternalResources parameters. No external resource was created.")
 
     @docval(*get_docval(AllelesTable.add_allele))
     def add_allele(self, **kwargs):
