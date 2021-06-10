@@ -2,9 +2,8 @@ import numpy as np
 import warnings
 
 from pynwb import register_class
-from pynwb.core import DynamicTable, DynamicTableRegion
+from pynwb.core import DynamicTable
 from hdmf.utils import docval, get_docval, getargs, popargs, call_docval_func, AllowPositional
-from hdmf.common import ExternalResources
 from hdmf.common.resources import Key
 
 
@@ -58,28 +57,28 @@ class AllelesTable(DynamicTable):
 
     @docval(
             {'name': 'symbol',
-            'type': str,
-            'doc': ('Symbol/name of the allele, e.g., Rorb-IRES-Cre. This must be unique in the table.')},
+             'type': str,
+             'doc': ('Symbol/name of the allele, e.g., Rorb-IRES-Cre. This must be unique in the table.')},
             {'name': 'recombinase',
-            'type': str,
-            'doc': ('An enzyme that mediates a recombination exchange'
-                    'reaction between two DNA templates, each containing a specific recognition site.'),
-            'default': None},
+             'type': str,
+             'doc': ('An enzyme that mediates a recombination exchange'
+                     'reaction between two DNA templates, each containing a specific recognition site.'),
+             'default': None},
             {'name': 'reporter',
-            'type': str,
-            'doc': ('Sequence that forms all or part of the protein product encoded by a'
-                    'transgenic locus or modified endogenous locus and that encodes an enzyme'
-                    'whose activity can be used to detect the presence of that protein product.'),
-            'default': None},
+             'type': str,
+             'doc': ('Sequence that forms all or part of the protein product encoded by a'
+                     'transgenic locus or modified endogenous locus and that encodes an enzyme'
+                     'whose activity can be used to detect the presence of that protein product.'),
+             'default': None},
             {'name': 'promoter',
-            'type': str,
-            'doc': ('A DNA sequence at which RNA polymerase binds and initiates transcription.'),
-            'default': None},
+             'type': str,
+             'doc': ('A DNA sequence at which RNA polymerase binds and initiates transcription.'),
+             'default': None},
             {'name': 'recombinase_recognition_site',
-            'type': str,
-            'doc': ('Site where recombination occurs mediated by a specific recombinase, leading to'
-                    'integration, deletion or inversion of a DNA fragment.'),
-            'default': None},
+             'type': str,
+             'doc': ('Site where recombination occurs mediated by a specific recombinase, leading to'
+                     'integration, deletion or inversion of a DNA fragment.'),
+             'default': None},
             allow_extra=True,
             allow_positional=AllowPositional.ERROR)
     def add_allele(self, **kwargs):
@@ -127,10 +126,10 @@ class AllelesTable(DynamicTable):
         entity_id = kwargs['entity_id']
         entity_uri = kwargs['entity_uri']
 
-        # assert that field is a column of the alleles table  # TODO test this
-        # if field not in self.colnames:
-        #     msg = "%s is not a column of AllelesTable" % field
-        #     raise ValueError(msg)
+        # assert that field value needs to be on of the columns in AllelesTable
+        if field not in self.colnames:
+            msg = "%s is not a column of AllelesTable" % field
+            raise ValueError(msg)
 
         nwbfile = self.get_ancestor(data_type='GenotypeNWBFile')  # TODO change me to NWBFile after merge with NWB core
         if nwbfile is None:
@@ -150,6 +149,7 @@ class AllelesTable(DynamicTable):
 
 # NOTE: cannot write an empty genotypes table
 
+
 @register_class('GenotypesTable', 'ndx-genotype')
 class GenotypesTable(DynamicTable):
     """A table to hold structured genotype information."""
@@ -167,15 +167,21 @@ class GenotypesTable(DynamicTable):
          'description': 'Symbol/name of the locus.',
          'required': True},
         {'name': 'allele1',
-         'description': '...',  # TODO fill in descriptions
+         'description': ('The index or symbol of the first allele in the alleles table. Providing '
+                         'the index is more efficient than providing the symbol, which requires a search through the '
+                         'alleles table.'),
          'table': True,
          'required': True},
         {'name': 'allele2',
-         'description': '...',
+         'description': ('The index or symbol of the second allele in the alleles table. Providing '
+                         'the index is more efficient than providing the symbol, which requires a search through the '
+                         'alleles table.'),
          'table': True,
          'required': True},
         {'name': 'allele3',
-         'description': '...',
+         'description': ('The index or symbol of the third allele in the alleles table. Providing '
+                         'the index is more efficient than providing the symbol, which requires a search through the '
+                         'alleles table.'),
          'table': True,
          'required': False},
     )
@@ -259,7 +265,7 @@ class GenotypesTable(DynamicTable):
         {
             'name': 'allele2',
             'type': (int, str),
-            'doc': ('The index of the second allele in the alleles table, or the symbol of the second allele. Providing '
+            'doc': ('The index or the symbol of the second allele in the alleles table. Providing '
                     'the index is more efficient than providing the symbol, which requires a search through the '
                     'alleles table.'),
         },
@@ -317,6 +323,8 @@ class GenotypesTable(DynamicTable):
                 raise ValueError("'allele2' symbol '%s' not found in alleles table. Please first add the allele "
                                  "using GenotypeTable.add_allele()." % allele1)
             kwargs['allele2'] = allele2_ind
+        # NOTE if allele3 is provided for any genotype, then a non-None allele3
+        # value must be provided for all genotypes...
         allele3 = getargs('allele3', kwargs)
         if allele3 is not None and isinstance(allele3, str):
             allele3_ind = self.get_allele_index(allele3)
