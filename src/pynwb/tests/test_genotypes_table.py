@@ -5,7 +5,9 @@ import numpy as np
 from hdmf.common import VectorData
 from pynwb import NWBHDF5IO, validate as pynwb_validate
 from pynwb.testing import TestCase, remove_test_file
-from ndx_genotype import GenotypeNWBFile, GenotypeSubject, GenotypesTable, AllelesTable
+from ndx_external_resources import ERNWBFile
+
+from ndx_genotype import GenotypeSubject, GenotypesTable, AllelesTable
 
 
 class TestAllelesTable(TestCase):
@@ -32,7 +34,7 @@ class TestAllelesTable(TestCase):
         self.assertEqual(index, index_value)
 
     def set_up_genotypes_table(self, kwargs):
-        nwbfile = GenotypeNWBFile(
+        nwbfile = ERNWBFile(
             session_description='session_description',
             identifier='identifier',
             session_start_time=datetime.datetime.now(datetime.timezone.utc)
@@ -44,7 +46,7 @@ class TestAllelesTable(TestCase):
         gt = GenotypesTable(**kwargs)
         nwbfile.subject.genotypes_table = gt  # GenotypesTable must be descendant of NWBFile before add_genotype works
         # TODO remove this dependency
-        return gt
+        return nwbfile, gt
 
     def test_add_external_resource(self):
         key = 'key'
@@ -53,9 +55,8 @@ class TestAllelesTable(TestCase):
         entity_id = 'entity_id'
         entity_uri = 'entity_uri'
 
-        gt = self.set_up_genotypes_table({})
+        nwbfile, gt = self.set_up_genotypes_table({})
         at = gt.alleles_table
-        nwbfile = at.get_ancestor(data_type='GenotypeNWBFile')
         at.add_allele(symbol='Vipr2-IRES2-Cre')
         at.add_external_resource(
                                     field='symbol',
@@ -95,7 +96,7 @@ class TestAllelesTable(TestCase):
         entity_id = 'entity_id'
         entity_uri = 'entity_uri'
 
-        gt = self.set_up_genotypes_table({})
+        _, gt = self.set_up_genotypes_table({})
         at = gt.alleles_table
         at.add_allele(symbol='Vipr2-IRES2-Cre')
         with self.assertRaises(ValueError):
@@ -127,7 +128,7 @@ class TestGenotypesTable(TestCase):
         self.assertIsInstance(gt.alleles_table, AllelesTable)
 
     def set_up_genotypes_table(self, kwargs):
-        nwbfile = GenotypeNWBFile(
+        nwbfile = ERNWBFile(
             session_description='session_description',
             identifier='identifier',
             session_start_time=datetime.datetime.now(datetime.timezone.utc)
@@ -139,11 +140,10 @@ class TestGenotypesTable(TestCase):
         gt = GenotypesTable(**kwargs)
         nwbfile.subject.genotypes_table = gt  # GenotypesTable must be descendant of NWBFile before add_genotype works
         # TODO remove this dependency
-        return gt
+        return nwbfile, gt
 
     def test_add_external_resource(self):
-        gt = self.set_up_genotypes_table({})
-        nwbfile = gt.get_ancestor(data_type='GenotypeNWBFile')
+        nwbfile, gt = self.set_up_genotypes_table({})
         gt.add_allele(symbol='Vip-IRES-Cre')
         gt.add_allele(symbol='wt')
         gt.add_genotype(
@@ -160,7 +160,7 @@ class TestGenotypesTable(TestCase):
         self.assertEqual(nwbfile.external_resources.resources.data, [('locus_resource_name',  'locus_resource_uri')])
 
     def test_external_resource_warning(self):
-        gt = self.set_up_genotypes_table({})
+        _, gt = self.set_up_genotypes_table({})
         gt.add_allele(symbol='Vip-IRES-Cre')
         gt.add_allele(symbol='wt')
         gt.add_genotype(
@@ -178,7 +178,7 @@ class TestGenotypesTable(TestCase):
 
     def test_add_minimal_with_allele_index(self):
         """Test the constructor for GenotypesTable when passed indices into AllelesTable."""
-        gt = self.set_up_genotypes_table({})
+        _, gt = self.set_up_genotypes_table({})
         gt.add_allele(symbol='Vip-IRES-Cre')  # TODO warn if there is no external resource / identifier
         gt.add_allele(symbol='wt')
         gt.add_genotype(
@@ -191,7 +191,7 @@ class TestGenotypesTable(TestCase):
 
     def test_add_minimal_with_allele_symbol(self):
         """Test that the constructor for GenotypesTable sets values as expected."""
-        gt = self.set_up_genotypes_table({})
+        _, gt = self.set_up_genotypes_table({})
         gt.add_allele(symbol='Vip-IRES-Cre')  # TODO warn if there is no external resource / identifier
         gt.add_allele(symbol='wt')
         gt.add_genotype(
@@ -223,8 +223,7 @@ class TestGenotypesTable(TestCase):
         pd.testing.assert_frame_equal(gt[:, 'allele2'], exp)
 
     def test_add_typical(self):
-        gt = self.set_up_genotypes_table(dict(process='PCR'))
-        nwbfile = gt.get_ancestor(data_type='GenotypeNWBFile')
+        nwbfile, gt = self.set_up_genotypes_table(dict(process='PCR'))
         gt.add_allele(symbol='Vip-IRES-Cre')
         gt.add_allele(symbol='wt')
         gt.add_allele(symbol='Ai14(RCL-tdT)')
@@ -259,13 +258,12 @@ class TestGenotypesTable(TestCase):
         self.assertEqual(nwbfile.external_resources.resources.data, [('locus_resource_name',  'locus_resource_uri')])
 
     def test_add_full(self):
-        gt = self.set_up_genotypes_table(dict(
+        nwbfile, gt = self.set_up_genotypes_table(dict(
             process='PCR',
             process_url='https://dx.doi.org/10.17504/protocols.io.yjifuke',
             assembly='GRCm38.p6',
             annotation='NCBI Mus musculus Annotation Release 108',
         ))
-        nwbfile = gt.get_ancestor(data_type='GenotypeNWBFile')
         gt.add_allele(symbol='Vip-IRES-Cre')
         gt.add_allele(symbol='wt')
         gt.add_allele(symbol='Ai14(RCL-tdT)')
@@ -313,7 +311,7 @@ class TestGenotypesTableRoundtrip(TestCase):
         remove_test_file(self.path)
 
     def set_up_genotypes_table(self, kwargs):
-        self.nwbfile = GenotypeNWBFile(
+        self.nwbfile = ERNWBFile(
             session_description='session_description',
             identifier='identifier',
             session_start_time=datetime.datetime.now(datetime.timezone.utc)
@@ -444,7 +442,7 @@ class TestGenotypeSubjectRoundtrip(TestCase):
         Add a GenotypeSubject with a GenotypesTable to an NWBFile, write it to file, read the file, and test that the
         GenotypeSubject from the file matches the original GenotypeSubject.
         """
-        self.nwbfile = GenotypeNWBFile(
+        self.nwbfile = ERNWBFile(
             session_description='session_description',
             identifier='identifier',
             session_start_time=datetime.datetime.now(datetime.timezone.utc)

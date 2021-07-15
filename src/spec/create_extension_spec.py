@@ -17,6 +17,7 @@ def main():
     )
 
     ns_builder.include_namespace('core')
+    ns_builder.include_namespace('ndx-external-resources')
     ns_builder.include_type('ExternalResources', namespace='hdmf-experimental')  # TODO migrate to core
 
     genotypes_table_spec = NWBGroupSpec(
@@ -95,13 +96,6 @@ def main():
                 dtype='text',
             ),
             NWBDatasetSpec(
-                name='generation_method',
-                neurodata_type_inc='VectorData',
-                doc='...',
-                dtype='text',
-                quantity='?',
-            ),
-            NWBDatasetSpec(
                 name='recombinase',
                 neurodata_type_inc='VectorData',
                 doc='...',
@@ -123,7 +117,7 @@ def main():
                 quantity='?',
             ),
             NWBDatasetSpec(
-                name='flanked_sequence',
+                name='recombinase_recognition_site',
                 neurodata_type_inc='VectorData',
                 doc='...',
                 dtype='text',
@@ -148,35 +142,7 @@ def main():
         ],
     )
 
-    genotype_nwbfile_spec = NWBGroupSpec(
-        neurodata_type_def='GenotypeNWBFile',
-        neurodata_type_inc='NWBFile',
-        doc=('Extension of the NWBFile class to allow 1) placing the new GenotypeSubject type '
-             'in /general/subject in the NWBFile and 2) placing the new external resources group. '
-             'NOTE: If this proposal for extension to NWB gets merged with the core schema, then this type would be '
-             'removed and the NWBFile specification updated instead.'),
-        groups=[
-            NWBGroupSpec(
-                name='general',  # override existing general group
-                doc='Expanded definition of general from NWBFile.',
-                groups=[
-                    NWBGroupSpec(
-                        name='subject',  # override existing subject type
-                        neurodata_type_inc='GenotypeSubject',
-                        doc='Subject information with structured genotype information.',
-                        quantity='?',
-                    ),
-                ],
-            ),
-            NWBGroupSpec(
-                name='.external_resources',
-                neurodata_type_inc='ExternalResources',
-                doc='External resources used in this file.',
-            ),
-        ],
-    )
-
-    new_data_types = [genotypes_table_spec, alleles_table_spec, genotype_subject_spec, genotype_nwbfile_spec]
+    new_data_types = [genotypes_table_spec, alleles_table_spec, genotype_subject_spec]
 
     # export the spec to yaml files in the spec folder
     output_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'spec'))

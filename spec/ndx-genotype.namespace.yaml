@@ -15,6 +15,7 @@ namespaces:
   name: ndx-genotype
   schema:
   - namespace: core
+  - namespace: ndx-external-resources
   - namespace: hdmf-experimental
     neurodata_types:
     - ExternalResources

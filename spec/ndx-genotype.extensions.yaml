@@ -29,19 +29,13 @@ groups:
     doc: Symbol/name of the locus, e.g., Rorb.
   - name: allele1
     neurodata_type_inc: DynamicTableRegion
-    doc: The index or symbol of the first allele in the alleles table.
-         Providing the index is more efficient than providing the symbol,
-         which requires a search through the alleles table.
+    doc: '...'
   - name: allele2
     neurodata_type_inc: DynamicTableRegion
-    doc: The index or symbol of the second allele in the alleles table.
-         Providing the index is more efficient than providing the symbol,
-         which requires a search through the alleles table.
+    doc: '...'
   - name: allele3
     neurodata_type_inc: DynamicTableRegion
-    doc: The index or symbol of the third allele in the alleles table.
-         Providing the index is more efficient than providing the symbol,
-         which requires a search through the alleles table.
+    doc: '...'
   groups:
   - name: alleles_table
     neurodata_type_inc: AllelesTable
@@ -57,51 +51,30 @@ groups:
   - name: recombinase
     neurodata_type_inc: VectorData
     dtype: text
-    doc: An enzyme that mediates a recombination exchange reaction between
-      two DNA templates, each containing a specific recognition site.
+    doc: '...'
     quantity: '?'
   - name: reporter
     neurodata_type_inc: VectorData
     dtype: text
-    doc: Sequence that forms all or part of the protein product encoded by a
-      transgenic locus or modified endogenous locus and that encodes an enzyme
-      whose activity can be used to detect the presence of that protein product.
+    doc: '...'
     quantity: '?'
   - name: promoter
     neurodata_type_inc: VectorData
     dtype: text
-    doc: A DNA sequence at which RNA polymerase binds and initiates transcription.
+    doc: '...'
     quantity: '?'
   - name: recombinase_recognition_site
     neurodata_type_inc: VectorData
     dtype: text
-    doc: Site where recombination occurs mediated by a specific recombinase,
-        leading to integration, deletion or inversion of a DNA fragment.
+    doc: '...'
     quantity: '?'
 - neurodata_type_def: GenotypeSubject
   neurodata_type_inc: Subject
-  doc: An enhanced Subject type that has an additional field for a genotype table.
-    If this proposal for extension to NWB gets merged with the core schema,
-    then this type would be removed and the Subject specification updated instead.
+  doc: 'An enhanced Subject type that has an additional field for a genotype table.
+    NOTE: If this proposal for extension to NWB gets merged with the core schema,
+    then this type would be removed and the Subject specification updated instead.'
   groups:
   - name: genotypes_table
     neurodata_type_inc: GenotypesTable
     doc: Structured genotype information for the subject.
     quantity: '?'
-- neurodata_type_def: GenotypeNWBFile
-  neurodata_type_inc: NWBFile
-  doc: 'Extension of the NWBFile class to allow 1) placing the new GenotypeSubject
-    type in /general/subject in the NWBFile and 2) placing the new external resources
-    group. NOTE: If this proposal for extension to NWB gets merged with the core schema,
-    then this type would be removed and the NWBFile specification updated instead.'
-  groups:
-  - name: general
-    doc: Expanded definition of general from NWBFile.
-    groups:
-    - name: subject
-      neurodata_type_inc: GenotypeSubject
-      doc: Subject information with structured genotype information.
-      quantity: '?'
-  - name: .external_resources
-    neurodata_type_inc: ExternalResources
-    doc: External resources used in this file.

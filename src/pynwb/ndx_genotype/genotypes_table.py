@@ -131,9 +131,9 @@ class AllelesTable(DynamicTable):
             msg = "%s is not a column of AllelesTable" % field
             raise ValueError(msg)
 
-        nwbfile = self.get_ancestor(data_type='GenotypeNWBFile')  # TODO change me to NWBFile after merge with NWB core
+        nwbfile = self.get_ancestor(data_type='ERNWBFile')  # TODO change me to NWBFile after merge with NWB core
         if nwbfile is None:
-            msg = "AllelesTable must have a GenotypeNWBFile as an ancestor to associate with ExternalResources"
+            msg = "AllelesTable must have a ERNWBFile as an ancestor to associate with ExternalResources"
             raise ValueError(msg)
 
         er = nwbfile.external_resources.add_ref(
@@ -342,7 +342,7 @@ class GenotypesTable(DynamicTable):
         if self.allele3 is not None and self['allele3'].table is None:
             self['allele3'].table = self.alleles_table
 
-        nwbfile = self.get_ancestor(data_type='GenotypeNWBFile')  # TODO changeme to NWBFile after migration
+        nwbfile = self.get_ancestor(data_type='ERNWBFile')  # TODO changeme to NWBFile after migration
 
         # TODO warn if no external resource information is provided
         if (locus_resource_name is not None and locus_resource_uri is not None and locus_entity_id is not None and

@@ -22,6 +22,5 @@ if not os.path.exists(ndx_genotype_specpath):
 # Load the namespace
 load_namespaces(ndx_genotype_specpath)
 
-from . import io as __io  # noqa: F401,E402
 from .genotypes_table import GenotypesTable, AllelesTable  # noqa: F401,E402
-from .genotype_nwbfile import GenotypeNWBFile, GenotypeSubject  # noqa: F401,E402
+from .genotype_subject import GenotypeSubject  # noqa: F401,E402
