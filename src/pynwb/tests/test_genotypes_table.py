@@ -80,13 +80,13 @@ class TestAllelesTable(TestCase):
         at = AllelesTable()
         with self.assertRaises(ValueError):
             at.add_external_resource(
-                                    field='flanked_sequence',
-                                    key=key,
-                                    resource_name=resource_name,
-                                    resource_uri=resource_uri,
-                                    entity_id=entity_id,
-                                    entity_uri=entity_uri
-                                    )
+                field='flanked_sequence',
+                key=key,
+                resource_name=resource_name,
+                resource_uri=resource_uri,
+                entity_id=entity_id,
+                entity_uri=entity_uri
+            )
 
     def test_check_field(self):
         key = 'key'
@@ -97,17 +97,16 @@ class TestAllelesTable(TestCase):
 
         gt = self.set_up_genotypes_table({})
         at = gt.alleles_table
-        nwbfile = at.get_ancestor(data_type='GenotypeNWBFile')
         at.add_allele(symbol='Vipr2-IRES2-Cre')
         with self.assertRaises(ValueError):
             at.add_external_resource(
-                                        field='not_a_column',
-                                        key=key,
-                                        resource_name=resource_name,
-                                        resource_uri=resource_uri,
-                                        entity_id=entity_id,
-                                        entity_uri=entity_uri
-                                        )
+                field='not_a_column',
+                key=key,
+                resource_name=resource_name,
+                resource_uri=resource_uri,
+                entity_id=entity_id,
+                entity_uri=entity_uri
+            )
 
 
 class TestGenotypesTable(TestCase):
@@ -147,46 +146,48 @@ class TestGenotypesTable(TestCase):
         nwbfile = gt.get_ancestor(data_type='GenotypeNWBFile')
         gt.add_allele(symbol='Vip-IRES-Cre')
         gt.add_allele(symbol='wt')
-        gt.add_genotype(locus='Vip',
-                        allele1='Vip-IRES-Cre',
-                        allele2='wt',
-                        locus_resource_name='locus_resource_name',
-                        locus_resource_uri='locus_resource_uri',
-                        locus_entity_id='locus_entity_id',
-                        locus_entity_uri='locus_entity_uri')
+        gt.add_genotype(
+            locus='Vip',
+            allele1='Vip-IRES-Cre',
+            allele2='wt',
+            locus_resource_name='locus_resource_name',
+            locus_resource_uri='locus_resource_uri',
+            locus_entity_id='locus_entity_id',
+            locus_entity_uri='locus_entity_uri'
+        )
         self.assertEqual(nwbfile.external_resources.keys.data, [('Vip',)])
         self.assertEqual(nwbfile.external_resources.entities.data, [(0, 0, 'locus_entity_id', 'locus_entity_uri')])
         self.assertEqual(nwbfile.external_resources.resources.data, [('locus_resource_name',  'locus_resource_uri')])
 
     def test_external_resource_warning(self):
         gt = self.set_up_genotypes_table({})
-        nwbfile = gt.get_ancestor(data_type='GenotypeNWBFile')
-        gt.add_allele(symbol='Vip-IRES-Cre')
-        gt.add_allele(symbol='wt')
-        gt.add_genotype(locus='Vip',
-                        allele1='Vip-IRES-Cre',
-                        allele2='wt')
-        msg = "User did not provide ExternalResources parameters. No external resource was created."
-        with self.assertWarns(UserWarning, msg=msg):
-            gt.add_genotype(locus='Vip',
-                            allele1='Vip-IRES-Cre',
-                            allele2='wt')
-
-    def test_add_minimal_with_allele_index(self):
-        """Test that the constructor for GenotypesTable sets values as expected."""
-        gt = self.set_up_genotypes_table({})
         gt.add_allele(symbol='Vip-IRES-Cre')
         gt.add_allele(symbol='wt')
         gt.add_genotype(
             locus='Vip',
             allele1='Vip-IRES-Cre',
-            allele2='wt',
+            allele2='wt'
         )
-        self.assertEqual(gt[:, 'locus'], ['Vip'])
-        exp = pd.DataFrame({'symbol': [['Vip-IRES-Cre']]}, index=pd.Index(name='id', data=[0]))
-        pd.testing.assert_frame_equal(gt[:, 'allele1'], exp)  # TODO requires HDMF #579
-        exp = pd.DataFrame({'symbol': [['wt']]}, index=pd.Index(name='id', data=[1]))
-        pd.testing.assert_frame_equal(gt[:, 'allele2'], exp)
+        msg = "User did not provide ExternalResources parameters. No external resource was created."
+        with self.assertWarnsWith(UserWarning, msg):
+            gt.add_genotype(
+                locus='Vip',
+                allele1='Vip-IRES-Cre',
+                allele2='wt'
+            )
+
+    def test_add_minimal_with_allele_index(self):
+        """Test the constructor for GenotypesTable when passed indices into AllelesTable."""
+        gt = self.set_up_genotypes_table({})
+        gt.add_allele(symbol='Vip-IRES-Cre')  # TODO warn if there is no external resource / identifier
+        gt.add_allele(symbol='wt')
+        gt.add_genotype(
+            locus='Vip',  # TODO warn if there is no external resource / identifier
+            allele1=0,
+            allele2=1,
+        )
+
+        self._test_minimal_helper(gt)
 
     def test_add_minimal_with_allele_symbol(self):
         """Test that the constructor for GenotypesTable sets values as expected."""
@@ -198,18 +199,33 @@ class TestGenotypesTable(TestCase):
             allele1='Vip-IRES-Cre',
             allele2='wt',
         )
+
+        self._test_minimal_helper(gt)
+
+    def _test_minimal_helper(self, gt):
+        exp = pd.DataFrame({'locus': ['Vip'], 'allele1': ['Vip-IRES-Cre'], 'allele2': ['wt']},
+                           index=pd.Index(name='id', data=[0]))
+        pd.testing.assert_frame_equal(gt.to_dataframe(), exp)
+
+        # test that allele1 and allele2 values are indices internally
+        exp = pd.DataFrame({'locus': ['Vip'], 'allele1': [0], 'allele2': [1]}, index=pd.Index(name='id', data=[0]))
+        pd.testing.assert_frame_equal(gt.get(0, index=True), exp)
+
+        # get the locus column contents
         self.assertEqual(gt[:, 'locus'], ['Vip'])
-        exp = pd.DataFrame({'symbol': [['Vip-IRES-Cre']]}, index=pd.Index(name='id', data=[0]))
-        pd.testing.assert_frame_equal(gt[:, 'allele1'], exp)  # TODO requires HDMF #579
-        exp = pd.DataFrame({'symbol': [['wt']]}, index=pd.Index(name='id', data=[1]))
+
+        # get allele1 column contents -- should be a dataframe with subset of alleles table
+        exp = pd.DataFrame({'symbol': ['Vip-IRES-Cre']}, index=pd.Index(name='id', data=[0]))
+        pd.testing.assert_frame_equal(gt[:, 'allele1'], exp)
+
+        # get allele2 column contents -- should be a dataframe with subset of alleles table
+        exp = pd.DataFrame({'symbol': ['wt']}, index=pd.Index(name='id', data=[1]))
         pd.testing.assert_frame_equal(gt[:, 'allele2'], exp)
 
     def test_add_typical(self):
         gt = self.set_up_genotypes_table(dict(process='PCR'))
         nwbfile = gt.get_ancestor(data_type='GenotypeNWBFile')
-        gt.add_allele(
-            symbol='Vip-IRES-Cre'
-        )
+        gt.add_allele(symbol='Vip-IRES-Cre')
         gt.add_allele(symbol='wt')
         gt.add_allele(symbol='Ai14(RCL-tdT)')
         gt.add_genotype(
@@ -219,7 +235,8 @@ class TestGenotypesTable(TestCase):
             locus_resource_name='locus_resource_name',
             locus_resource_uri='locus_resource_uri',
             locus_entity_id='locus_entity_id_1',
-            locus_entity_uri='locus_entity_uri_1')
+            locus_entity_uri='locus_entity_uri_1'
+        )
         gt.add_genotype(
             locus='ROSA26',
             allele1='Ai14(RCL-tdT)',
@@ -227,12 +244,13 @@ class TestGenotypesTable(TestCase):
             locus_resource_name='locus_resource_name',
             locus_resource_uri='locus_resource_uri',
             locus_entity_id='locus_entity_id_2',
-            locus_entity_uri='locus_entity_uri_2')
+            locus_entity_uri='locus_entity_uri_2'
+        )
 
         self.assertEqual(gt[:, 'locus'], ['Vip', 'ROSA26'])
         exp = pd.DataFrame({'symbol': ['Vip-IRES-Cre', 'Ai14(RCL-tdT)']}, index=pd.Index(name='id', data=[0, 2]))
-        pd.testing.assert_frame_equal(gt[:, 'allele1'], exp)  # TODO requires HDMF #579
-        exp = pd.DataFrame({'symbol': [['wt'], ['wt']]}, index=pd.Index(name='id', data=[1, 1]))
+        pd.testing.assert_frame_equal(gt[:, 'allele1'], exp)
+        exp = pd.DataFrame({'symbol': ['wt', 'wt']}, index=pd.Index(name='id', data=[1, 1]))
         pd.testing.assert_frame_equal(gt[:, 'allele2'], exp)
 
         self.assertEqual(nwbfile.external_resources.keys.data, [('Vip',), ('ROSA26',)])
@@ -273,8 +291,8 @@ class TestGenotypesTable(TestCase):
 
         self.assertEqual(gt[:, 'locus'], ['Vip', 'ROSA26'])
         exp = pd.DataFrame({'symbol': ['Vip-IRES-Cre', 'Ai14(RCL-tdT)']}, index=pd.Index(name='id', data=[0, 2]))
-        pd.testing.assert_frame_equal(gt[:, 'allele1'], exp)  # TODO requires HDMF #579
-        exp = pd.DataFrame({'symbol': [['wt'], ['wt']]}, index=pd.Index(name='id', data=[1, 1]))
+        pd.testing.assert_frame_equal(gt[:, 'allele1'], exp)
+        exp = pd.DataFrame({'symbol': ['wt', 'wt']}, index=pd.Index(name='id', data=[1, 1]))
         pd.testing.assert_frame_equal(gt[:, 'allele2'], exp)
         exp = pd.DataFrame({'symbol': ['wt', 'allele3']}, index=pd.Index(name='id', data=[1, 3]))
         pd.testing.assert_frame_equal(gt[:, 'allele3'], exp)

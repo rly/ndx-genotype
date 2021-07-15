@@ -1,2 +1,3 @@
 pynwb>=1.3.0
+hdmf>=3.0.0
 hdmf_docutils
