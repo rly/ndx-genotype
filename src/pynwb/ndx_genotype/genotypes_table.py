@@ -127,7 +127,7 @@ class AllelesTable(DynamicTable):
         entity_id = kwargs['entity_id']
         entity_uri = kwargs['entity_uri']
 
-        # assert that field value needs to be on of the columns in AllelesTable
+        # assert that column name needs to be one of the columns in AllelesTable
         if attribute not in self.colnames:
             msg = "%s is not a column of AllelesTable" % attribute
             raise ValueError(msg)
