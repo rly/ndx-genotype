@@ -109,9 +109,10 @@ class AllelesTable(DynamicTable):
             warnings.warn("Multiple rows in alleles table contain symbol '%s'. Using the first match." % symbol)
         return index[0]
 
-    @docval({'name': 'field', 'type': str, 'default': None,
-             'doc': ('the column in the AllelesTable for the external resource'
-                     'i.e symbol, recombinase, reporter, promoter, or recombinase_recognition_site')},
+    @docval({'name': 'column', 'type': str,
+             'doc': ('the column in the AllelesTable for the external resource '
+                     'i.e. symbol, recombinase, reporter, promoter, or recombinase_recognition_site'),
+             'default': None},
             {'name': 'key', 'type': (str, Key), 'default': None,
              'doc': 'the name of the entity'},
             {'name': 'resource_name', 'type': str, 'doc': 'the name of the resource to be created', 'default': None},
@@ -119,16 +120,16 @@ class AllelesTable(DynamicTable):
             {'name': 'entity_id', 'type': str, 'doc': 'the identifier for the entity at the resource', 'default': None},
             {'name': 'entity_uri', 'type': str, 'doc': 'the URI for the identifier at the resource', 'default': None})
     def add_external_resource(self, **kwargs):
-        field = kwargs['field']
+        attribute = kwargs['column']
         key = kwargs['key']
         resource_name = kwargs['resource_name']
         resource_uri = kwargs['resource_uri']
         entity_id = kwargs['entity_id']
         entity_uri = kwargs['entity_uri']
 
-        # assert that field value needs to be on of the columns in AllelesTable
-        if field not in self.colnames:
-            msg = "%s is not a column of AllelesTable" % field
+        # assert that column name needs to be one of the columns in AllelesTable
+        if attribute not in self.colnames:
+            msg = "%s is not a column of AllelesTable" % attribute
             raise ValueError(msg)
 
         nwbfile = self.get_ancestor(data_type='ERNWBFile')  # TODO change me to NWBFile after merge with NWB core
@@ -138,7 +139,7 @@ class AllelesTable(DynamicTable):
 
         er = nwbfile.external_resources.add_ref(
             container=self,
-            field=field,
+            attribute=attribute,
             key=key,
             resource_name=resource_name,
             resource_uri=resource_uri,
@@ -349,12 +350,12 @@ class GenotypesTable(DynamicTable):
                 locus_entity_uri is not None):
             nwbfile.external_resources.add_ref(
                 container=self,
-                field='locus',
+                attribute='locus',
                 key=locus,
                 resource_name=locus_resource_name,
                 resource_uri=locus_resource_uri,
                 entity_id=locus_entity_id,
-                entity_uri=locus_entity_uri,
+                entity_uri=locus_entity_uri
             )
         else:
             warnings.warn("User did not provide ExternalResources parameters. No external resource was created.")

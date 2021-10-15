@@ -59,7 +59,7 @@ class TestAllelesTable(TestCase):
         at = gt.alleles_table
         at.add_allele(symbol='Vipr2-IRES2-Cre')
         at.add_external_resource(
-                                    field='symbol',
+                                    column='symbol',
                                     key=key,
                                     resource_name=resource_name,
                                     resource_uri=resource_uri,
@@ -81,7 +81,7 @@ class TestAllelesTable(TestCase):
         at = AllelesTable()
         with self.assertRaises(ValueError):
             at.add_external_resource(
-                field='flanked_sequence',
+                column='flanked_sequence',
                 key=key,
                 resource_name=resource_name,
                 resource_uri=resource_uri,
@@ -101,7 +101,7 @@ class TestAllelesTable(TestCase):
         at.add_allele(symbol='Vipr2-IRES2-Cre')
         with self.assertRaises(ValueError):
             at.add_external_resource(
-                field='not_a_column',
+                column='not_a_column',
                 key=key,
                 resource_name=resource_name,
                 resource_uri=resource_uri,
