@@ -121,15 +121,16 @@ class TestGenotypeSubjectOntology(TestCase):
         nwbfile.subject = GenotypeSubject(
             subject_id='3',
             genotype='Vip-IRES-Cre/wt',
+            species='Homo sapiens'
         )
 
-        ontology = EnsemblOntology(name='example')
-        nwbfile.subject.add_ontology_browser(key='Homo sapiens', ontology=ontology)
+        ontology = EnsemblOntology(version='1.0')
+        nwbfile.subject.add_ontology(key=['Homo sapiens'], attribute='species', ontology=ontology)
 
         self.assertEqual(nwbfile.external_resources.keys.data, [('Homo sapiens',)])
         self.assertEqual(nwbfile.external_resources.resources.data, [('Ensembl', 'https://rest.ensembl.org')])
         self.assertEqual(nwbfile.external_resources.entities.data, [(0, 0, '9606', 'https://rest.ensembl.org/taxonomy/id/Homo sapiens')])
-        self.assertEqual(nwbfile.external_resources.objects.data, [(nwbfile.subject.object_id, '', '')])
+        self.assertEqual(nwbfile.external_resources.objects.data, [(nwbfile.subject.object_id, 'GenotypeSubject/species', '')])
 
 
 
