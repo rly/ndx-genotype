@@ -1,6 +1,5 @@
 from pynwb import register_class
 from pynwb.file import Subject
-from hdmf import Ontology
 from hdmf.utils import docval, get_docval, call_docval_func, popargs
 
 from .genotypes_table import GenotypesTable
