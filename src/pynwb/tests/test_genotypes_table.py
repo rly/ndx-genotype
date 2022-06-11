@@ -3,6 +3,7 @@ from dateutil.tz import tzlocal
 import pandas as pd
 import numpy as np
 from hdmf.common import VectorData
+from hdmf import EnsemblOntology, Ontology
 from pynwb import NWBHDF5IO, validate as pynwb_validate
 from pynwb.testing import TestCase, remove_test_file
 from ndx_external_resources import ERNWBFile
@@ -108,6 +109,29 @@ class TestAllelesTable(TestCase):
                 entity_id=entity_id,
                 entity_uri=entity_uri
             )
+
+
+class TestGenotypeSubjectOntology(TestCase):
+    def test_genotypes_subject(self):
+        nwbfile = ERNWBFile(
+            session_description='session_description',
+            identifier='identifier',
+            session_start_time=datetime.datetime.now(datetime.timezone.utc)
+        )
+        nwbfile.subject = GenotypeSubject(
+            subject_id='3',
+            genotype='Vip-IRES-Cre/wt',
+            species='Homo sapiens'
+        )
+
+        ontology = EnsemblOntology(version='1.0')
+        nwbfile.subject.add_ontology(key=['Homo sapiens'], attribute='species', ontology=ontology)
+
+        self.assertEqual(nwbfile.external_resources.keys.data, [('Homo sapiens',)])
+        self.assertEqual(nwbfile.external_resources.resources.data, [('Ensembl', 'https://rest.ensembl.org')])
+        self.assertEqual(nwbfile.external_resources.entities.data, [(0, 0, '9606', 'https://rest.ensembl.org/taxonomy/id/Homo sapiens')])
+        self.assertEqual(nwbfile.external_resources.objects.data, [(nwbfile.subject.object_id, 'GenotypeSubject/species', '')])
+
 
 
 class TestGenotypesTable(TestCase):
